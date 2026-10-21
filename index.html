@@ -172,10 +172,10 @@
       font-size: 0.9rem;
       line-height: 1.5;
     }
-    /* Charts */
+    /* Clear Graph Grid Container */
     canvas {
       max-width: 100%;
-      background: #252525;
+      background: #ffffff;
       border-radius: 8px;
       padding: 10px;
       box-sizing: border-box;
@@ -183,9 +183,23 @@
     .history-item {
       border-bottom: 1px solid var(--border-color);
       padding: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .history-item:last-child {
       border-bottom: none;
+    }
+    .btn-delete-item {
+      background: #d32f2f;
+      color: #fff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: auto;
+      margin: 0;
     }
   </style>
 </head>
@@ -247,7 +261,7 @@
       </div>
     </div>
 
-    <!-- Tab 2: Macros & Nutrition with Customized Food List -->
+    <!-- Tab 2: Macros & Nutrition -->
     <div id="macros" class="tab-content">
       <div class="card">
         <h3>حاسبة الماكروز والأغذية (قبل الطهي - Raw) 🥗</h3>
@@ -310,7 +324,6 @@
         <label style="margin-top:15px;">مبيان توزيع الماكروز للوجبة:</label>
         <canvas id="macrosChart" height="180"></canvas>
 
-        <!-- AI Food Coach Box -->
         <div class="ai-food-box" id="ai-food-analysis">
           🤖 <b>تحليل الروبوت الآلي للطعام:</b> أضف طعامك اليوم ليعلمك المدرب هل وجبتك تغطي احتياجك للضخامة أو التنشيف!
         </div>
@@ -320,10 +333,10 @@
       </div>
     </div>
 
-    <!-- Tab 3: Analytics -->
+    <!-- Tab 3: Analytics (Simplified & Clean Chart like Graph Paper) -->
     <div id="analytics" class="tab-content">
       <div class="card">
-        <h3>مبيان الأوزان والتكرارات المزدوج 📈</h3>
+        <h3>رسم بياني واضح لمنحنى الأوزان 📉📈</h3>
         
         <label>اختر العضلة لفلترة التمارين:</label>
         <select id="chart-muscle-filter" onchange="filterChartExerciseOptions()">
@@ -336,14 +349,16 @@
           <option value="ترايسبس">الترايسبس</option>
         </select>
 
-        <label>اختر التمرين:</label>
+        <label>اختر التمرين لرؤية منحنى التطور المباشر:</label>
         <select id="chart-exercise-select" onchange="renderWorkoutChart()"></select>
 
-        <canvas id="workoutChart" height="200"></canvas>
+        <!-- White Graph Sheet View -->
+        <div style="background: #ffffff; padding: 5px; border-radius: 8px;">
+          <canvas id="workoutChart" height="220"></canvas>
+        </div>
 
-        <!-- AI Coach Box -->
         <div class="ai-box" id="ai-coach-analysis">
-          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض تطور الأوزان والتكرارات معاً.
+          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض منحنى تطور الوزن والتكرارات بشكل واضح ورسوم بيانية مبسطة.
         </div>
       </div>
 
@@ -352,7 +367,10 @@
         <label>تسجيل الوزن (مثال: أخر الشهر أو الأسبوع):</label>
         <input type="number" id="body-weight-input" placeholder="أدخل وزنك الحالي (كغ)">
         <button class="btn-primary" onclick="saveBodyWeight()">تسجيل الوزن الشهري 📝</button>
-        <canvas id="weightChart" height="180" style="margin-top:10px;"></canvas>
+
+        <div style="background: #ffffff; padding: 5px; border-radius: 8px; margin-top: 10px;">
+          <canvas id="weightChart" height="180"></canvas>
+        </div>
         
         <div class="ai-box" id="ai-weight-analysis" style="border-right-color: var(--info-color);">
           📊 <b>تحليل وزن الجسم:</b> يسجل هذا المبيان تقدمك الشهري لمتابعة زيادة الكتلة العضلية أو التنشيف.
@@ -360,7 +378,7 @@
       </div>
     </div>
 
-    <!-- Tab 4: Organized Archive -->
+    <!-- Tab 4: Organized Archive with Delete Item Option -->
     <div id="archive" class="tab-content">
       <div class="card">
         <h3>الأرشيف المنظم 📜</h3>
@@ -553,7 +571,7 @@
         sets.push({ weight: parseFloat(w), reps: parseInt(r) });
       }
 
-      const entry = { date, muscle, exName, sets, timestamp: Date.now() };
+      const entry = { id: Date.now(), date, muscle, exName, sets };
       
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       logs.push(entry);
@@ -566,7 +584,38 @@
       loadAllArchives();
     }
 
-    // Nutrition & Macros Logic + AI Food Coach
+    // Delete Single Record from Archive
+    function deleteWorkoutItem(id) {
+      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
+        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        logs = logs.filter(l => l.id !== id);
+        localStorage.setItem('smayka_logs', JSON.stringify(logs));
+        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
+        loadAllArchives();
+        renderWorkoutChart();
+      }
+    }
+
+    function deleteNutritionItem(index) {
+      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
+        let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
+        nutritionLogs.splice(index, 1);
+        localStorage.setItem('smayka_nutrition_logs', JSON.stringify(nutritionLogs));
+        loadAllArchives();
+      }
+    }
+
+    function deleteWeightItem(index) {
+      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
+        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+        weights.splice(index, 1);
+        localStorage.setItem('smayka_weights', JSON.stringify(weights));
+        loadAllArchives();
+        renderWeightChart();
+      }
+    }
+
+    // Nutrition & Macros Logic
     let totalP = 0, totalC = 0, totalF = 0, totalCal = 0;
     
     function addFood() {
@@ -650,7 +699,7 @@
       });
     }
 
-    // Body Weight Tracker (Monthly focus)
+    // Body Weight Tracker
     function saveBodyWeight() {
       const w = parseFloat(document.getElementById('body-weight-input').value);
       if (!w) return alert('أدخل وزناً صحيحاً');
@@ -683,7 +732,7 @@
       if (currentSelected) select.value = currentSelected;
     }
 
-    // Load Archives
+    // Load Archives with Individual Delete Buttons
     function loadAllArchives() {
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       const workoutContainer = document.getElementById('history-list-workouts');
@@ -699,13 +748,16 @@
       } else {
         workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => `
           <div class="history-item">
-            <b>🗓️ التاريخ: ${l.date} | التمرين: <span style="color:#4CAF50;">${l.exName}</span> (${l.muscle || 'تمرين'})</b>
-            <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-              ج1: ${l.sets[0]?.weight || 0}كغ (${l.sets[0]?.reps || 0} تكرارات) |
-              ج2: ${l.sets[1]?.weight || 0}كغ (${l.sets[1]?.reps || 0} تكرارات) |
-              ج3: ${l.sets[2]?.weight || 0}كغ (${l.sets[2]?.reps || 0} تكرارات) |
-              ج4: ${l.sets[3]?.weight || 0}كغ (${l.sets[3]?.reps || 0} تكرارات)
+            <div>
+              <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName}</span> (${l.muscle || 'تمرين'})</b>
+              <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                ج1: ${l.sets[0]?.weight || 0}كغ (${l.sets[0]?.reps || 0}) |
+                ج2: ${l.sets[1]?.weight || 0}كغ (${l.sets[1]?.reps || 0}) |
+                ج3: ${l.sets[2]?.weight || 0}كغ (${l.sets[2]?.reps || 0}) |
+                ج4: ${l.sets[3]?.weight || 0}كغ (${l.sets[3]?.reps || 0})
+              </div>
             </div>
+            <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
           </div>
         `).join('');
       }
@@ -715,12 +767,15 @@
       if (!nutritionLogs || nutritionLogs.length === 0) {
         nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
       } else {
-        nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map(n => `
+        nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
           <div class="history-item">
-            <b>🗓️ ${n.date} - مجموع اليوم</b>
-            <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-              بروتين: ${n.p}غ | كارب: ${n.c}غ | دهون: ${n.f}غ | سعرات: ${n.cal} Kcal
+            <div>
+              <b>🗓️ ${n.date} - مجموع اليوم</b>
+              <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                بروتين: ${n.p}غ | كارب: ${n.c}غ | دهون: ${n.f}غ | سعرات: ${n.cal} Kcal
+              </div>
             </div>
+            <button class="btn-delete-item" onclick="deleteNutritionItem(${nutritionLogs.length - 1 - idx})">حذف 🗑️</button>
           </div>
         `).join('');
       }
@@ -730,15 +785,18 @@
       if (!weights || weights.length === 0) {
         weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
       } else {
-        weightsContainer.innerHTML = weights.slice().reverse().map(w => `
+        weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
           <div class="history-item">
-            <b>🗓️ الفترة/الشهر: ${w.date}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight} كغ</b>
+            <div>
+              <b>🗓️ الفترة/الشهر: ${w.date}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight} كغ</b>
+            </div>
+            <button class="btn-delete-item" onclick="deleteWeightItem(${weights.length - 1 - idx})">حذف 🗑️</button>
           </div>
         `).join('');
       }
     }
 
-    // Dual-Axis Workout Chart (Weights + Reps together)
+    // Graph Paper Style Clean Chart (Simple, Clear & Readable)
     let workoutChartInstance = null;
     function renderWorkoutChart() {
       const exName = document.getElementById('chart-exercise-select').value;
@@ -747,12 +805,6 @@
 
       const labels = filtered.map(l => l.date);
       const maxWeights = filtered.map(l => Math.max(...l.sets.map(s => parseFloat(s.weight) || 0)));
-      const avgReps = filtered.map(l => {
-        let validReps = l.sets.map(s => parseInt(s.reps) || 0).filter(r => r > 0);
-        if (validReps.length === 0) return 0;
-        let sum = validReps.reduce((a, b) => a + b, 0);
-        return (sum / validReps.length).toFixed(1);
-      });
 
       const ctx = document.getElementById('workoutChart').getContext('2d');
       if (workoutChartInstance) workoutChartInstance.destroy();
@@ -763,44 +815,35 @@
           labels: labels.length ? labels : ['لا توجد بيانات'],
           datasets: [
             {
-              label: 'أعلى وزن (كغ)',
+              label: 'أعلى وزن ملعوب (كغ)',
               data: maxWeights.length ? maxWeights : [0],
-              borderColor: '#4CAF50',
-              backgroundColor: 'rgba(76, 175, 80, 0.2)',
-              yAxisID: 'y',
-              fill: true,
-              tension: 0.3
-            },
-            {
-              label: 'متوسط التكرارات',
-              data: avgReps.length ? avgReps : [0],
-              borderColor: '#2196F3',
-              backgroundColor: 'rgba(33, 150, 243, 0.2)',
-              yAxisID: 'y1',
+              borderColor: '#e53935', // Red line like the reference picture
+              backgroundColor: 'rgba(229, 57, 53, 0.1)',
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: '#e53935',
               fill: false,
-              tension: 0.3
+              tension: 0.1
             }
           ]
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: '#fff' } } },
+          plugins: { 
+            legend: { 
+              display: true,
+              labels: { color: '#000', font: { weight: 'bold' } } 
+            } 
+          },
           scales: {
-            x: { ticks: { color: '#aaa' } },
-            y: {
-              type: 'linear',
-              display: true,
-              position: 'left',
-              ticks: { color: '#4CAF50' },
-              title: { display: true, text: 'الوزن (كغ)', color: '#4CAF50' }
+            x: { 
+              grid: { color: '#d0d0d0', lineWidth: 1 }, 
+              ticks: { color: '#000', font: { weight: 'bold' } } 
             },
-            y1: {
-              type: 'linear',
-              display: true,
-              position: 'right',
-              ticks: { color: '#2196F3' },
-              grid: { drawOnChartArea: false },
-              title: { display: true, text: 'التكرارات', color: '#2196F3' }
+            y: {
+              grid: { color: '#d0d0d0', lineWidth: 1 },
+              ticks: { color: '#000', font: { weight: 'bold' } },
+              title: { display: true, text: 'الوزن (كغ)', color: '#000', font: { weight: 'bold' } }
             }
           }
         }
@@ -811,8 +854,7 @@
         aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
       } else {
         const lastW = maxWeights[maxWeights.length - 1];
-        const lastR = avgReps[avgReps.length - 1];
-        aiBox.innerHTML = `🔥 <b>تحليل الأداء المزدوج:</b> في آخر حصة لتمرين (${exName}) لعبت بأعلى وزن <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. راقب خط التكرارات الأزرق مع الوزن الأخضر لترى تطور القوة والحجم معاً! 💪`;
+        aiBox.innerHTML = `🔥 <b>تطور المنحنى:</b> في آخر حصة لتمرين (${exName}) لعبت بأعلى وزن <b>${lastW} كغ</b>. يوضح المنحنى البياني أعلاه تصاعد مستواك بوضوح على شبكة الرسم البياني! 💪`;
       }
     }
 
@@ -832,17 +874,20 @@
           datasets: [{
             label: 'وزن الجسم الشهري (كغ)',
             data: data.length ? data : [0],
-            borderColor: '#FF9800',
-            backgroundColor: 'rgba(255, 152, 0, 0.2)',
-            fill: true
+            borderColor: '#1e88e5', // Blue line like graph paper
+            backgroundColor: 'rgba(30, 136, 229, 0.1)',
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#1e88e5',
+            fill: false
           }]
         },
         options: {
           responsive: true,
-          plugins: { legend: { labels: { color: '#fff' } } },
+          plugins: { legend: { labels: { color: '#000', font: { weight: 'bold' } } } },
           scales: {
-            x: { ticks: { color: '#aaa' } },
-            y: { ticks: { color: '#aaa' } }
+            x: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } },
+            y: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } }
           }
         }
       });
