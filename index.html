@@ -508,7 +508,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Customized Exercises Map
+    // Customized Exercises Map (With all 3 Biceps exercises restored)
     const exercisesMap = {
       'صدر': [
         'Bench Press (بنش بريس)', 
@@ -534,6 +534,7 @@
       ],
       'بايسبس': [
         'Hammer Curl (هامر كيرل - اليد في الأمام)', 
+        'Biceps Curl (بايسبس الكف نحو الأمام)', 
         'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
       ],
       'ترايسبس': [
@@ -819,7 +820,6 @@
       const exName = document.getElementById('chart-exercise-select').value;
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       
-      // Smart Filter to include both Old & New records of the same exercise
       const filtered = logs.filter(l => isSameExercise(l.exName, exName));
 
       const labels = filtered.map(l => l.date);
