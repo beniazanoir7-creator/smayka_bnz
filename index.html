@@ -333,7 +333,7 @@
       </div>
     </div>
 
-    <!-- Tab 3: Analytics (Clear Graph with Red Weight Line + Blue Reps Line) -->
+    <!-- Tab 3: Analytics -->
     <div id="analytics" class="tab-content">
       <div class="card">
         <h3>رسم بياني واضح لمنحنى الأوزان والتكرارات 📉📈</h3>
@@ -491,7 +491,7 @@
       }
     }
 
-    // Customized Exercises Map
+    // Customized Exercises Map (With Single Arm Lat Pulldown added)
     const exercisesMap = {
       'صدر': [
         'Bench Press (بنش بريس)', 
@@ -500,6 +500,7 @@
       ],
       'ظهر': [
         'Lat Pulldown / Pull Up (سحب عالي / بول أب)', 
+        'Single Arm Lat Pulldown (سحب عالي بيد واحدة)', 
         'Barbell Row (تجديف بار طويل)', 
         'Dumbbell Row (منشار)'
       ],
@@ -645,7 +646,7 @@
       if (totalCal === 0) {
         aiFoodBox.innerHTML = '🤖 <b>تحليل الروبوت الآلي للطعام:</b> لم تقم بإضافة أي طعام بعد اليوم.';
       } else if (totalCal < 2000) {
-        aiFoodBox.innerHTML = `⚠️ <b>تنبيه الروبوت الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة باحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
+        aiFoodBox.innerHTML = `⚠️ <b>تنبيه الروبوت الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة بااحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
       } else if (totalCal >= 2000 && totalCal <= 3200) {
         aiFoodBox.innerHTML = `🔥 <b>تحليل مميز من الروبوت الآلي:</b> ممتاز جداً! سعراتك (${totalCal.toFixed(0)} Kcal) وبروتينك (${totalP.toFixed(1)}غ) متوازنة ومتاحة بشكل رائع لتغذية عضلاتك ودعم نموها. استمر! 💪`;
       } else {
@@ -946,4 +947,3 @@
   </script>
 </body>
 </html>
-
