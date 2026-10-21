@@ -333,10 +333,10 @@
       </div>
     </div>
 
-    <!-- Tab 3: Analytics (Simplified & Clean Chart like Graph Paper) -->
+    <!-- Tab 3: Analytics (Clear Graph with Red Weight Line + Blue Reps Line) -->
     <div id="analytics" class="tab-content">
       <div class="card">
-        <h3>رسم بياني واضح لمنحنى الأوزان 📉📈</h3>
+        <h3>رسم بياني واضح لمنحنى الأوزان والتكرارات 📉📈</h3>
         
         <label>اختر العضلة لفلترة التمارين:</label>
         <select id="chart-muscle-filter" onchange="filterChartExerciseOptions()">
@@ -354,11 +354,11 @@
 
         <!-- White Graph Sheet View -->
         <div style="background: #ffffff; padding: 5px; border-radius: 8px;">
-          <canvas id="workoutChart" height="220"></canvas>
+          <canvas id="workoutChart" height="230"></canvas>
         </div>
 
         <div class="ai-box" id="ai-coach-analysis">
-          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض منحنى تطور الوزن والتكرارات بشكل واضح ورسوم بيانية مبسطة.
+          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض منحنى تطور الوزن والتكرارات معاً.
         </div>
       </div>
 
@@ -378,12 +378,11 @@
       </div>
     </div>
 
-    <!-- Tab 4: Organized Archive with Delete Item Option -->
+    <!-- Tab 4: Organized Archive -->
     <div id="archive" class="tab-content">
       <div class="card">
         <h3>الأرشيف المنظم 📜</h3>
         
-        <!-- Sub Navigation inside Archive -->
         <div class="archive-sub-tabs">
           <button class="sub-btn active" onclick="switchArchiveTab('workout-arc')">🏋️ التمارين والأوزان</button>
           <button class="sub-btn" onclick="switchArchiveTab('nutrition-arc')">🥗 الماكروز والأكل</button>
@@ -584,7 +583,7 @@
       loadAllArchives();
     }
 
-    // Delete Single Record from Archive
+    // Delete Item Actions
     function deleteWorkoutItem(id) {
       if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
         let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
@@ -732,7 +731,7 @@
       if (currentSelected) select.value = currentSelected;
     }
 
-    // Load Archives with Individual Delete Buttons
+    // Load Archives
     function loadAllArchives() {
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       const workoutContainer = document.getElementById('history-list-workouts');
@@ -796,7 +795,7 @@
       }
     }
 
-    // Graph Paper Style Clean Chart (Simple, Clear & Readable)
+    // Graph Paper Style Dual Lines Chart (Red line = Weight | Blue line = Reps)
     let workoutChartInstance = null;
     function renderWorkoutChart() {
       const exName = document.getElementById('chart-exercise-select').value;
@@ -805,6 +804,12 @@
 
       const labels = filtered.map(l => l.date);
       const maxWeights = filtered.map(l => Math.max(...l.sets.map(s => parseFloat(s.weight) || 0)));
+      const avgReps = filtered.map(l => {
+        let validReps = l.sets.map(s => parseInt(s.reps) || 0).filter(r => r > 0);
+        if (validReps.length === 0) return 0;
+        let sum = validReps.reduce((a, b) => a + b, 0);
+        return (sum / validReps.length).toFixed(1);
+      });
 
       const ctx = document.getElementById('workoutChart').getContext('2d');
       if (workoutChartInstance) workoutChartInstance.destroy();
@@ -815,13 +820,26 @@
           labels: labels.length ? labels : ['لا توجد بيانات'],
           datasets: [
             {
-              label: 'أعلى وزن ملعوب (كغ)',
+              label: 'أعلى وزن (كغ)',
               data: maxWeights.length ? maxWeights : [0],
-              borderColor: '#e53935', // Red line like the reference picture
+              borderColor: '#e53935', // Red line for Weight
               backgroundColor: 'rgba(229, 57, 53, 0.1)',
               borderWidth: 3,
               pointRadius: 5,
               pointBackgroundColor: '#e53935',
+              yAxisID: 'y',
+              fill: false,
+              tension: 0.1
+            },
+            {
+              label: 'متوسط التكرارات',
+              data: avgReps.length ? avgReps : [0],
+              borderColor: '#1e88e5', // Blue line for Reps
+              backgroundColor: 'rgba(30, 136, 229, 0.1)',
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: '#1e88e5',
+              yAxisID: 'y1',
               fill: false,
               tension: 0.1
             }
@@ -841,9 +859,20 @@
               ticks: { color: '#000', font: { weight: 'bold' } } 
             },
             y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
               grid: { color: '#d0d0d0', lineWidth: 1 },
-              ticks: { color: '#000', font: { weight: 'bold' } },
-              title: { display: true, text: 'الوزن (كغ)', color: '#000', font: { weight: 'bold' } }
+              ticks: { color: '#e53935', font: { weight: 'bold' } },
+              title: { display: true, text: 'الوزن (كغ)', color: '#e53935', font: { weight: 'bold' } }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#1e88e5', font: { weight: 'bold' } },
+              title: { display: true, text: 'التكرارات', color: '#1e88e5', font: { weight: 'bold' } }
             }
           }
         }
@@ -854,7 +883,8 @@
         aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
       } else {
         const lastW = maxWeights[maxWeights.length - 1];
-        aiBox.innerHTML = `🔥 <b>تطور المنحنى:</b> في آخر حصة لتمرين (${exName}) لعبت بأعلى وزن <b>${lastW} كغ</b>. يوضح المنحنى البياني أعلاه تصاعد مستواك بوضوح على شبكة الرسم البياني! 💪`;
+        const lastR = avgReps[avgReps.length - 1];
+        aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج:</b> في آخر حصة لتمرين (${exName}) لعبت بأعلى وزن <b>${lastW} كغ</b> (الخط الأحمر) بمتوسط تكرارات <b>${lastR}</b> (الخط الأزرق). كلاهما يظهران بوضوح على شبكة الرسم البياني! 💪`;
       }
     }
 
@@ -874,7 +904,7 @@
           datasets: [{
             label: 'وزن الجسم الشهري (كغ)',
             data: data.length ? data : [0],
-            borderColor: '#1e88e5', // Blue line like graph paper
+            borderColor: '#1e88e5',
             backgroundColor: 'rgba(30, 136, 229, 0.1)',
             borderWidth: 3,
             pointRadius: 5,
@@ -916,3 +946,4 @@
   </script>
 </body>
 </html>
+
