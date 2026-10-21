@@ -491,7 +491,24 @@
       }
     }
 
-    // Customized Exercises Map (With Single Arm Lat Pulldown added)
+    // Smart Flexible Name Matching Helper
+    function cleanName(str) {
+      if (!str) return '';
+      return str.toLowerCase()
+        .replace(/\(.*\)/g, '')
+        .replace(/[^a-z0-9أ-ي]/g, '')
+        .trim();
+    }
+
+    function isSameExercise(name1, name2) {
+      if (name1 === name2) return true;
+      let c1 = cleanName(name1);
+      let c2 = cleanName(name2);
+      if (!c1 || !c2) return false;
+      return c1.includes(c2) || c2.includes(c1);
+    }
+
+    // Customized Exercises Map
     const exercisesMap = {
       'صدر': [
         'Bench Press (بنش بريس)', 
@@ -646,7 +663,7 @@
       if (totalCal === 0) {
         aiFoodBox.innerHTML = '🤖 <b>تحليل الروبوت الآلي للطعام:</b> لم تقم بإضافة أي طعام بعد اليوم.';
       } else if (totalCal < 2000) {
-        aiFoodBox.innerHTML = `⚠️ <b>تنبيه الروبوت الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة بااحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
+        aiFoodBox.innerHTML = `⚠️ <b>تنبيه الروبوت الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة باحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
       } else if (totalCal >= 2000 && totalCal <= 3200) {
         aiFoodBox.innerHTML = `🔥 <b>تحليل مميز من الروبوت الآلي:</b> ممتاز جداً! سعراتك (${totalCal.toFixed(0)} Kcal) وبروتينك (${totalP.toFixed(1)}غ) متوازنة ومتاحة بشكل رائع لتغذية عضلاتك ودعم نموها. استمر! 💪`;
       } else {
@@ -732,7 +749,7 @@
       if (currentSelected) select.value = currentSelected;
     }
 
-    // Load Archives
+    // Load Archives with Flexible Name Search
     function loadAllArchives() {
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       const workoutContainer = document.getElementById('history-list-workouts');
@@ -740,7 +757,7 @@
 
       const filteredLogs = logs.filter(l => {
         if (selectedEx === 'ALL') return true;
-        return l.exName === selectedEx;
+        return isSameExercise(l.exName, selectedEx);
       });
 
       if (!filteredLogs || filteredLogs.length === 0) {
@@ -796,12 +813,14 @@
       }
     }
 
-    // Graph Paper Style Dual Lines Chart (Red line = Weight | Blue line = Reps)
+    // Graph Paper Style Dual Lines Chart with Smart Flexible Matching
     let workoutChartInstance = null;
     function renderWorkoutChart() {
       const exName = document.getElementById('chart-exercise-select').value;
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-      const filtered = logs.filter(l => l.exName === exName);
+      
+      // Smart Filter to include both Old & New records of the same exercise
+      const filtered = logs.filter(l => isSameExercise(l.exName, exName));
 
       const labels = filtered.map(l => l.date);
       const maxWeights = filtered.map(l => Math.max(...l.sets.map(s => parseFloat(s.weight) || 0)));
@@ -823,7 +842,7 @@
             {
               label: 'أعلى وزن (كغ)',
               data: maxWeights.length ? maxWeights : [0],
-              borderColor: '#e53935', // Red line for Weight
+              borderColor: '#e53935',
               backgroundColor: 'rgba(229, 57, 53, 0.1)',
               borderWidth: 3,
               pointRadius: 5,
@@ -835,7 +854,7 @@
             {
               label: 'متوسط التكرارات',
               data: avgReps.length ? avgReps : [0],
-              borderColor: '#1e88e5', // Blue line for Reps
+              borderColor: '#1e88e5',
               backgroundColor: 'rgba(30, 136, 229, 0.1)',
               borderWidth: 3,
               pointRadius: 5,
@@ -882,10 +901,23 @@
       const aiBox = document.getElementById('ai-coach-analysis');
       if (maxWeights.length === 0) {
         aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
+      } else if (maxWeights.length === 1) {
+        aiBox.innerHTML = `💡 <b>تحليل أول حصة:</b> تم تسجيل أول حصة لتمرين (${exName}) بأعلى وزن <b>${maxWeights[0]} كغ</b> بمتوسط تكرارات <b>${avgReps[0]}</b>. واصل الاستمرار للبدء في المقارنة والتطور! 💪`;
       } else {
         const lastW = maxWeights[maxWeights.length - 1];
+        const prevW = maxWeights[maxWeights.length - 2];
         const lastR = avgReps[avgReps.length - 1];
-        aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج:</b> في آخر حصة لتمرين (${exName}) لعبت بأعلى وزن <b>${lastW} كغ</b> (الخط الأحمر) بمتوسط تكرارات <b>${lastR}</b> (الخط الأزرق). كلاهما يظهران بوضوح على شبكة الرسم البياني! 💪`;
+        
+        let diffMsg = "";
+        if (lastW > prevW) {
+          diffMsg = `ارتفع أعلى وزن من <b>${prevW} كغ</b> إلى <b>${lastW} كغ</b>! أداء ممتاز في تصاعد 🔥`;
+        } else if (lastW === prevW) {
+          diffMsg = `وزنك مستقر عند <b>${lastW} كغ</b>. حاول إضافة تكرار إضافي الحصة القادمة لكسر الثبات! ⚖️`;
+        } else {
+          diffMsg = `انخفض الوزن قليلاً عن الحصة السابقة (كان ${prevW} كغ). احرص على التغذية الجيدة والراحة! ⚠️`;
+        }
+
+        aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج (${maxWeights.length} حصص مسجلة):</b> في آخر حصة لعبت بـ <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. ${diffMsg}`;
       }
     }
 
