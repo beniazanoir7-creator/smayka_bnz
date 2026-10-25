@@ -228,12 +228,13 @@
           <option value="أكتاف">الأكتاف (Shoulders)</option>
           <option value="بايسبس">البايسبس (Biceps)</option>
           <option value="ترايسبس">الترايسبس (Triceps)</option>
+          <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
         <label>اسم التمرين:</label>
-        <select id="exercise-name"></select>
+        <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
-        <label>تسجيل 4 الجلسات (المجموعات):</label>
+        <label>تسجيل 4 الجلسات (المجموعات): <span style="font-size:0.75rem; color:#4CAF50;">(يتم تعبئة أوزان الحصة الفائته تلقائياً 💡)</span></label>
         <div class="sets-grid">
           <div class="set-box">
             <span>الجلسة 1</span>
@@ -271,7 +272,6 @@
 
         <label>اختر المادة الغذائية:</label>
         <select id="food-item">
-          <!-- Carbohydrates -->
           <optgroup label="🍞 الكاربوهيدرات والفواكه">
             <option value="أرز أبيض نيء" data-p="7" data-c="78" data-f="0.6" data-cal="360">أرز أبيض نيء (Rice Raw)</option>
             <option value="شوفان نيء" data-p="13.5" data-c="67" data-f="7" data-cal="389">شوفان نيء (Oats)</option>
@@ -282,8 +282,6 @@
             <option value="بطاطس نيئة" data-p="2" data-c="17" data-f="0.1" data-cal="77">بطاطس نيئة</option>
             <option value="تمر" data-p="2.5" data-c="75" data-f="0.4" data-cal="277">تمر (Dates)</option>
           </optgroup>
-
-          <!-- Proteins & Dairy -->
           <optgroup label="🍗 البروتينات والأسماك والألبان (نيء)">
             <option value="صدور دجاج نيئة" data-p="23" data-c="0" data-f="1.2" data-cal="110">صدور الدجاج نيئة (Chicken Breast)</option>
             <option value="لحم بقري مفروم نيء" data-p="20" data-c="0" data-f="12" data-cal="190">لحم بقري مفروم نيء (Minced Beef)</option>
@@ -296,8 +294,6 @@
             <option value="تونة بالماء" data-p="26" data-c="0" data-f="1" data-cal="116">تونة معلبة (بالماء)</option>
             <option value="SMAYKA Gainer Mix" data-p="24.1" data-c="45" data-f="14" data-cal="424">💥 الوصفة السرية تبع SMAYKA (ميكس الضخامة)</option>
           </optgroup>
-
-          <!-- Healthy Fats & Nuts -->
           <optgroup label="🥜 الدهون الصحية والزيوت">
             <option value="زيت زيتون" data-p="0" data-c="0" data-f="100" data-cal="884">زيت زيتون (Olive Oil)</option>
             <option value="فول سوداني / كاوكاو" data-p="25.8" data-c="16" data-f="49.2" data-cal="567">فول سوداني / كاوكاو (Peanuts)</option>
@@ -347,6 +343,7 @@
           <option value="أكتاف">الأكتاف</option>
           <option value="بايسبس">البايسبس</option>
           <option value="ترايسبس">الترايسبس</option>
+          <option value="سواعد">السواعد</option>
         </select>
 
         <label>اختر التمرين لرؤية منحنى التطور المباشر:</label>
@@ -508,7 +505,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Customized Exercises Map (With all 3 Biceps exercises restored)
+    // Customized Exercises Map (With Glutes, Triceps, and Forearms added)
     const exercisesMap = {
       'صدر': [
         'Bench Press (بنش بريس)', 
@@ -525,6 +522,7 @@
         'Squat (سكوات)', 
         'Leg Extension / Chair (تمرين الرجل فوق الكرسي)', 
         'Hamstring Curl (فخذ خلفي بالكابل)', 
+        'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)',
         'Calf Raises (السمانة)'
       ],
       'أكتاف': [
@@ -539,7 +537,13 @@
       ],
       'ترايسبس': [
         'Triceps Pushdown (ترايسبس كابل)', 
-        'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)'
+        'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
+        'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
+      ],
+      'سواعد': [
+        'Forearm Cable Pull (سحب الساعد من الأعلى)',
+        'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
+        'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
       ]
     };
 
@@ -553,6 +557,39 @@
         opt.innerText = ex;
         select.appendChild(opt);
       });
+      loadPreviousSetData();
+    }
+
+    // Auto-fill inputs with last session's data for this exercise
+    function loadPreviousSetData() {
+      const exName = document.getElementById('exercise-name').value;
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      
+      // Find the most recent log matching this exercise
+      const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
+      
+      // Clear inputs first
+      for (let i = 1; i <= 4; i++) {
+        document.getElementById(`s${i}-w`).value = '';
+        document.getElementById(`s${i}-r`).value = '';
+      }
+
+      if (matchedLogs.length > 0) {
+        // Get the last record
+        const lastRecord = matchedLogs[matchedLogs.length - 1];
+        if (lastRecord && lastRecord.sets) {
+          for (let i = 0; i < 4; i++) {
+            if (lastRecord.sets[i]) {
+              if (lastRecord.sets[i].weight > 0) {
+                document.getElementById(`s${i+1}-w`).value = lastRecord.sets[i].weight;
+              }
+              if (lastRecord.sets[i].reps > 0) {
+                document.getElementById(`s${i+1}-r`).value = lastRecord.sets[i].reps;
+              }
+            }
+          }
+        }
+      }
     }
 
     function filterChartExerciseOptions() {
