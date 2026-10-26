@@ -174,7 +174,7 @@
     }
     .timer-btns button {
       margin-bottom: 0;
-      font-size: 0.85rem;
+      font-size: 0.8rem;
       padding: 6px;
     }
     /* AI Boxes */
@@ -259,14 +259,14 @@
         <label>اسم التمرين:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
-        <!-- Built-in Smart Rest Timer Widget -->
+        <!-- Built-in Smart Rest Timer Widget (Updated with exact 3m, 2m, 90s) -->
         <div class="timer-card">
-          <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة الذكي بين المجموعات:</span>
-          <div class="timer-display" id="timer-clock">02:00</div>
+          <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة (3 دقائق / دقيقتين / 90 ثانية):</span>
+          <div class="timer-display" id="timer-clock">03:00</div>
           <div class="timer-btns">
-            <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3;">راحة ثقيلة (2 د)</button>
-            <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50;">راحة عادية (90 ث)</button>
-            <button class="btn-primary" onclick="startRestTimer(60)" style="background:#FF9800;">راحة عزل (1 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(180)" style="background:#e53935;">ثقيلة (3 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3;">متوسطة (2 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50;">عزل (90 ث)</button>
             <button onclick="stopRestTimer()" style="background:#d32f2f; color:#fff; border:none; border-radius:6px; cursor:pointer;">إيقاف ⏹️</button>
           </div>
         </div>
@@ -479,9 +479,9 @@
       event.target.classList.add('active');
     }
 
-    // Smart Rest Timer Engine
+    // Smart Rest Timer Engine (Updated: 180s for heavy, 120s for moderate, 90s for isolation)
     let timerInterval = null;
-    let timeLeft = 120;
+    let timeLeft = 180;
 
     function startRestTimer(seconds) {
       stopRestTimer();
@@ -502,7 +502,7 @@
         clearInterval(timerInterval);
         timerInterval = null;
       }
-      timeLeft = 120;
+      timeLeft = 180;
       updateTimerDisplay();
     }
 
@@ -636,11 +636,13 @@
       });
       loadPreviousSetData();
       
-      // Auto suggest timer based on muscle group
+      // Auto suggest timer based on muscle group and heavy load
       if (group === 'أرجل' || group === 'ظهر' || group === 'صدر') {
-        startRestTimer(120); // 2 mins for heavy compounds
+        startRestTimer(180); // 3 mins for heavy compounds
+      } else if (group === 'أكتاف') {
+        startRestTimer(120); // 2 mins for moderate
       } else {
-        startRestTimer(90);  // 90 secs for isolation/others
+        startRestTimer(90);  // 90 secs for isolation/arms
       }
     }
 
