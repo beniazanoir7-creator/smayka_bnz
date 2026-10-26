@@ -153,6 +153,30 @@
       color: var(--accent-color);
       font-weight: bold;
     }
+    /* Rest Timer Widget Box */
+    .timer-card {
+      background: #252525;
+      border: 2px dashed var(--warning-color);
+      padding: 12px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      text-align: center;
+    }
+    .timer-display {
+      font-size: 1.8rem;
+      font-weight: bold;
+      color: var(--warning-color);
+      margin: 5px 0;
+    }
+    .timer-btns {
+      display: flex;
+      gap: 5px;
+    }
+    .timer-btns button {
+      margin-bottom: 0;
+      font-size: 0.85rem;
+      padding: 6px;
+    }
     /* AI Boxes */
     .ai-box {
       background: #252525;
@@ -228,11 +252,24 @@
           <option value="أكتاف">الأكتاف (Shoulders)</option>
           <option value="بايسبس">البايسبس (Biceps)</option>
           <option value="ترايسبس">الترايسبس (Triceps)</option>
+          <option value="ترابيس">الترابيس (Traps)</option>
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
         <label>اسم التمرين:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
+
+        <!-- Built-in Smart Rest Timer Widget -->
+        <div class="timer-card">
+          <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة الذكي بين المجموعات:</span>
+          <div class="timer-display" id="timer-clock">02:00</div>
+          <div class="timer-btns">
+            <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3;">راحة ثقيلة (2 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50;">راحة عادية (90 ث)</button>
+            <button class="btn-primary" onclick="startRestTimer(60)" style="background:#FF9800;">راحة عزل (1 د)</button>
+            <button onclick="stopRestTimer()" style="background:#d32f2f; color:#fff; border:none; border-radius:6px; cursor:pointer;">إيقاف ⏹️</button>
+          </div>
+        </div>
 
         <label>تسجيل 4 الجلسات (المجموعات): <span style="font-size:0.75rem; color:#4CAF50;">(يتم تعبئة أوزان الحصة الفائته تلقائياً 💡)</span></label>
         <div class="sets-grid">
@@ -343,6 +380,7 @@
           <option value="أكتاف">الأكتاف</option>
           <option value="بايسبس">البايسبس</option>
           <option value="ترايسبس">الترايسبس</option>
+          <option value="ترابيس">الترابيس</option>
           <option value="سواعد">السواعد</option>
         </select>
 
@@ -441,6 +479,41 @@
       event.target.classList.add('active');
     }
 
+    // Smart Rest Timer Engine
+    let timerInterval = null;
+    let timeLeft = 120;
+
+    function startRestTimer(seconds) {
+      stopRestTimer();
+      timeLeft = seconds;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        updateTimerDisplay();
+        if (timeLeft <= 0) {
+          stopRestTimer();
+          alert('⏰ انتهت فترة الراحة! ادخل لتلعب المجموعة التالية يا وحش 💪');
+        }
+      }, 1000);
+    }
+
+    function stopRestTimer() {
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      timeLeft = 120;
+      updateTimerDisplay();
+    }
+
+    function updateTimerDisplay() {
+      const minutes = Math.floor(timeLeft / 60);
+      const seconds = timeLeft % 60;
+      const displayString = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      const clockEl = document.getElementById('timer-clock');
+      if (clockEl) clockEl.innerText = displayString;
+    }
+
     // Food Search Filter Function
     let allFoodOptions = [];
     window.addEventListener('DOMContentLoaded', () => {
@@ -505,7 +578,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Customized Exercises Map (With Glutes, Triceps, and Forearms added)
+    // Customized Exercises Map
     const exercisesMap = {
       'صدر': [
         'Bench Press (بنش بريس)', 
@@ -540,6 +613,10 @@
         'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
         'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
       ],
+      'ترابيس': [
+        'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
+        'Dumbbell Shrugs (ترابيس بالدمبل)'
+      ],
       'سواعد': [
         'Forearm Cable Pull (سحب الساعد من الأعلى)',
         'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
@@ -558,24 +635,28 @@
         select.appendChild(opt);
       });
       loadPreviousSetData();
+      
+      // Auto suggest timer based on muscle group
+      if (group === 'أرجل' || group === 'ظهر' || group === 'صدر') {
+        startRestTimer(120); // 2 mins for heavy compounds
+      } else {
+        startRestTimer(90);  // 90 secs for isolation/others
+      }
     }
 
-    // Auto-fill inputs with last session's data for this exercise
+    // Auto-fill inputs with last session's data for this exercise + Smart Timer suggestion
     function loadPreviousSetData() {
       const exName = document.getElementById('exercise-name').value;
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       
-      // Find the most recent log matching this exercise
       const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
       
-      // Clear inputs first
       for (let i = 1; i <= 4; i++) {
         document.getElementById(`s${i}-w`).value = '';
         document.getElementById(`s${i}-r`).value = '';
       }
 
       if (matchedLogs.length > 0) {
-        // Get the last record
         const lastRecord = matchedLogs[matchedLogs.length - 1];
         if (lastRecord && lastRecord.sets) {
           for (let i = 0; i < 4; i++) {
