@@ -214,11 +214,26 @@
     .history-item:last-child {
       border-bottom: none;
     }
+    .action-btns {
+      display: flex;
+      gap: 4px;
+    }
     .btn-delete-item {
       background: #d32f2f;
       color: #fff;
       border: none;
-      padding: 5px 10px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: auto;
+      margin: 0;
+    }
+    .btn-edit-item {
+      background: #ff9800;
+      color: #fff;
+      border: none;
+      padding: 5px 8px;
       border-radius: 6px;
       font-size: 0.75rem;
       cursor: pointer;
@@ -259,7 +274,7 @@
         <label>اسم التمرين:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
-        <!-- Built-in Smart Rest Timer Widget (Updated with exact 3m, 2m, 90s) -->
+        <!-- Built-in Smart Rest Timer Widget -->
         <div class="timer-card">
           <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة (3 دقائق / دقيقتين / 90 ثانية):</span>
           <div class="timer-display" id="timer-clock">03:00</div>
@@ -479,7 +494,7 @@
       event.target.classList.add('active');
     }
 
-    // Smart Rest Timer Engine (Updated: 180s for heavy, 120s for moderate, 90s for isolation)
+    // Smart Rest Timer Engine
     let timerInterval = null;
     let timeLeft = 180;
 
@@ -636,17 +651,15 @@
       });
       loadPreviousSetData();
       
-      // Auto suggest timer based on muscle group and heavy load
       if (group === 'أرجل' || group === 'ظهر' || group === 'صدر') {
-        startRestTimer(180); // 3 mins for heavy compounds
+        startRestTimer(180);
       } else if (group === 'أكتاف') {
-        startRestTimer(120); // 2 mins for moderate
+        startRestTimer(120);
       } else {
-        startRestTimer(90);  // 90 secs for isolation/arms
+        startRestTimer(90);
       }
     }
 
-    // Auto-fill inputs with last session's data for this exercise + Smart Timer suggestion
     function loadPreviousSetData() {
       const exName = document.getElementById('exercise-name').value;
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
@@ -720,6 +733,35 @@
       alert('تم حفظ التمرين بنجاح في الأرشيف والمبيان! 💪');
       populateArchiveExerciseDropdown();
       loadAllArchives();
+    }
+
+    // Edit Workout Item Action
+    function editWorkoutItem(id) {
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const item = logs.find(l => l.id === id);
+      if (!item) return;
+
+      // Prompt user to update weights and reps for each set
+      for (let i = 0; i < 4; i++) {
+        let currentW = item.sets[i]?.weight || 0;
+        let currentR = item.sets[i]?.reps || 0;
+        
+        let newW = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل الوزن (كغ):`, currentW);
+        if (newW === null) return; // Cancelled
+        
+        let newR = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل التكرارات:`, currentR);
+        if (newR === null) return; // Cancelled
+
+        if (!item.sets[i]) item.sets[i] = {};
+        item.sets[i].weight = parseFloat(newW) || 0;
+        item.sets[i].reps = parseInt(newR) || 0;
+      }
+
+      localStorage.setItem('smayka_logs', JSON.stringify(logs));
+      localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
+      alert('تم تعديل السجل بنجاح! ✏️');
+      loadAllArchives();
+      renderWorkoutChart();
     }
 
     // Delete Item Actions
@@ -895,7 +937,10 @@
                 ج4: ${l.sets[3]?.weight || 0}كغ (${l.sets[3]?.reps || 0})
               </div>
             </div>
-            <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
+            <div class="action-btns">
+              <button class="btn-edit-item" onclick="editWorkoutItem(${l.id || 0})">تعديل ✏️</button>
+              <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
+            </div>
           </div>
         `).join('');
       }
