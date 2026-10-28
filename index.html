@@ -248,19 +248,18 @@
 
     <!-- Main Navigation -->
     <div class="nav-tabs">
-      <button class="tab-btn active" onclick="switchTab(event, 'exercises')">💪 التمارين</button>
-      <button class="tab-btn" onclick="switchTab(event, 'macros')">🥗 الماكروز</button>
-      <button class="tab-btn" onclick="switchTab(event, 'analytics')">📈 المبيان</button>
-      <button class="tab-btn" onclick="switchTab(event, 'archive')">📜 الأرشيف</button>
+      <button class="tab-btn active" onclick="switchTab('exercises')">💪 التمارين</button>
+      <button class="tab-btn" onclick="switchTab('macros')">🥗 الماكروز</button>
+      <button class="tab-btn" onclick="switchTab('analytics')">📈 المبيان</button>
+      <button class="tab-btn" onclick="switchTab('archive')">📜 الأرشيف</button>
     </div>
 
     <!-- Tab 1: Exercises -->
     <div id="exercises" class="tab-content active">
       <div class="card">
         <h3>تسجيل حصة التدريب</h3>
-        
-        <label>1. اختر العضلة:</label>
-        <select id="muscle-group" onchange="updateSubCategoryOptions()">
+        <label>الفئة / العضلة:</label>
+        <select id="muscle-group" onchange="updateExerciseOptions()">
           <option value="صدر">الصدر (Chest)</option>
           <option value="ظهر">الظهر (Back)</option>
           <option value="أرجل">الأرجل (Legs)</option>
@@ -271,10 +270,7 @@
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
-        <label>2. اختر استهداف العضلة (الزاوية):</label>
-        <select id="sub-category" onchange="updateExerciseOptions()"></select>
-
-        <label>3. اختر التمرين:</label>
+        <label>اسم التمرين:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
         <!-- Built-in Smart Rest Timer Widget -->
@@ -396,8 +392,8 @@
           <option value="ظهر">الظهر</option>
           <option value="أرجل">الأرجل</option>
           <option value="أكتاف">الأكتاف</option>
-          <option value="بايسبس">بايسبس</option>
-          <option value="ترايسبس">ترايسبس</option>
+          <option value="بايسبس">البايسبس</option>
+          <option value="ترايسبس">الترايسبس</option>
           <option value="ترابيس">الترابيس</option>
           <option value="سواعد">السواعد</option>
         </select>
@@ -436,9 +432,9 @@
         <h3>الأرشيف المنظم 📜</h3>
         
         <div class="archive-sub-tabs">
-          <button class="sub-btn active" onclick="switchArchiveTab(event, 'workout-arc')">🏋️ التمارين والأوزان</button>
-          <button class="sub-btn" onclick="switchArchiveTab(event, 'nutrition-arc')">🥗 الماكروز والأكل</button>
-          <button class="sub-btn" onclick="switchArchiveTab(event, 'weight-arc')">⚖️ وزن الجسم</button>
+          <button class="sub-btn active" onclick="switchArchiveTab('workout-arc')">🏋️ التمارين والأوزان</button>
+          <button class="sub-btn" onclick="switchArchiveTab('nutrition-arc')">🥗 الماكروز والأكل</button>
+          <button class="sub-btn" onclick="switchArchiveTab('weight-arc')">⚖️ وزن الجسم</button>
         </div>
 
         <!-- Section 1: Workout Archive -->
@@ -471,37 +467,29 @@
   </div>
 
   <script>
-    // Navigation Tabs safely managed
-    function switchTab(e, tabId) {
-      try {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        if (e && e.target) e.target.classList.add('active');
-        
-        if (tabId === 'analytics') {
-          renderWorkoutChart();
-          renderWeightChart();
-        } else if (tabId === 'macros') {
-          renderMacrosChart();
-        } else if (tabId === 'archive') {
-          populateArchiveExerciseDropdown();
-          loadAllArchives();
-        }
-      } catch (err) {
-        console.error(err);
+    // Navigation Tabs
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+      
+      if (tabId === 'analytics') {
+        renderWorkoutChart();
+        renderWeightChart();
+      } else if (tabId === 'macros') {
+        renderMacrosChart();
+      } else if (tabId === 'archive') {
+        populateArchiveExerciseDropdown();
+        loadAllArchives();
       }
     }
 
-    function switchArchiveTab(e, subId) {
-      try {
-        document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(subId).style.display = 'block';
-        if (e && e.target) e.target.classList.add('active');
-      } catch (err) {
-        console.error(err);
-      }
+    function switchArchiveTab(subId) {
+      document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(subId).style.display = 'block';
+      event.target.classList.add('active');
     }
 
     // Smart Rest Timer Engine
@@ -605,282 +593,184 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Simple Structured Exercises (Muscle -> Target Area -> Exercises)
-    const structuredExercisesMap = {
-      'صدر': {
-        'الصدر العلوي (Incline)': [
-          'Incline Dumbbell Press (إنكلاين دبل بريس)',
-          'Incline Barbell Press (بنش علوي بالبار)',
-          'Incline Cable Fly (فلاي كابل علوي)'
-        ],
-        'الصدر الأوسط / المستوي (Flat)': [
-          'Bench Press (بنش بريس)',
-          'Flat Dumbbell Press (بنش بريس مستوي بالدمبل)',
-          'Chest Press Machine (جهاز ضغط الصدر)'
-        ],
-        'الصدر السفلي / المتوازي (Lower / Dips)': [
-          'Dips (متوازي)',
-          'Decline Bench Press (بنش مقلوب سفلي)'
-        ]
-      },
-      'ظهر': {
-        'اللاتس والعرض (Latissimus)': [
-          'Lat Pulldown / Pull Up (سحب عالي / بول أب)',
-          'Single Arm Lat Pulldown (سحب عالي بيد واحدة)'
-        ],
-        'وسط الظهر والسمكة (Mid-Back)': [
-          'Barbell Row (تجديف بار طويل)',
-          'Dumbbell Row (منشار)',
-          'Seated Cable Row (سحب أرضي كابل للوسط)'
-        ],
-        'أسفل الظهر (Lower Back)': [
-          'Hyperextensions (هايبر إكستنشن لأسفل الظهر)',
-          'Deadlift (ديدليفت)'
-        ]
-      },
-      'أرجل': {
-        'الفخذ الأمامي (Quads)': [
-          'Squat (سكوات)',
-          'Leg Press (ليج بريس للأرجل)',
-          'Leg Extension / Chair (تمرين الرجل فوق الكرسي)'
-        ],
-        'الفخذ الخلفي (Hamstrings)': [
-          'Hamstring Curl (فخذ خلفي بالكابل أو الجهاز)',
-          'Romanian Deadlift (ديدليفت روماني للبار الطويل أو الدمبل)'
-        ],
-        'الكلوتس (Glutes)': [
-          'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)'
-        ],
-        'السمانة (Calves)': [
-          'Calf Raises (السمانة)'
-        ]
-      },
-      'أكتاف': {
-        'الأكتاف الأمامية والجانبية (Front & Side)': [
-          'Overhead Press (ضغط أكتاف)',
-          'Lateral Raise (رفرفة جانبي)'
-        ],
-        'الأكتاف الخلفية (Rear Delts)': [
-          'Rear Delt Fly (خلفي)'
-        ]
-      },
-      'بايسبس': {
-        'البايسبس العادي والأمام': [
-          'Biceps Curl (بايسبس الكف نحو الأمام)',
-          'Barbell Biceps Curl (بايسبس بالبار)'
-        ],
-        'الهمر (Hammer)': [
-          'Hammer Curl (هامر كيرل - اليد في الأمام)'
-        ],
-        'عزل وكرسي الجيم': [
-          'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
-        ]
-      },
+    // Customized Exercises Map (Original Stable Version)
+    const exercisesMap = {
+      'صدر': [
+        'Bench Press (بنش بريس)', 
+        'Incline Dumbbell Press (إنكلاين دبل بريس)', 
+        'Dips (متوازي)'
+      ],
+      'ظهر': [
+        'Lat Pulldown / Pull Up (سحب عالي / بول أب)', 
+        'Single Arm Lat Pulldown (سحب عالي بيد واحدة)', 
+        'Barbell Row (تجديف بار طويل)', 
+        'Dumbbell Row (منشار)'
+      ],
+      'أرجل': [
+        'Squat (سكوات)', 
+        'Leg Extension / Chair (تمرين الرجل فوق الكرسي)', 
+        'Hamstring Curl (فخذ خلفي بالكابل)', 
+        'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)',
+        'Calf Raises (السمانة)'
+      ],
+      'أكتاف': [
+        'Overhead Press (ضغط أكتاف)', 
+        'Lateral Raise (رفرفة جانبي)', 
+        'Rear Delt Fly (خلفي)'
+      ],
+      'بايسبس': [
+        'Hammer Curl (هامر كيرل - اليد في الأمام)', 
+        'Biceps Curl (بايسبس الكف نحو الأمام)', 
+        'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
+      ],
       'ترايسبس': [
-        'الترايسبس بالكابل (Pushdown)': [
-          'Triceps Pushdown (ترايسبس كابل)'
-        ],
-        'فوق الرأس والديبس (Overhead / Dips)': [
-          'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
-          'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
-        ]
+        'Triceps Pushdown (ترايسبس كابل)', 
+        'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
+        'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
       ],
       'ترابيس': [
-        'الترابيس العلوية (Upper Traps)': [
-          'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
-          'Dumbbell Shrugs (ترابيس بالدمبل)'
-        ]
+        'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
+        'Dumbbell Shrugs (ترابيس بالدمبل)'
       ],
       'سواعد': [
-        'السواعد والقبضة (Forearms & Grip)': [
-          'Forearm Cable Pull (سحب الساعد من الأعلى)',
-          'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
-          'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
-        ]
+        'Forearm Cable Pull (سحب الساعد من الأعلى)',
+        'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
+        'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
       ]
     };
 
-    function updateSubCategoryOptions() {
-      try {
-        const muscle = document.getElementById('muscle-group').value;
-        const subSelect = document.getElementById('sub-category');
-        if (!subSelect) return;
-        subSelect.innerHTML = '';
-
-        const subCategories = structuredExercisesMap[muscle] || {};
-        for (let subName in subCategories) {
-          const opt = document.createElement('option');
-          opt.value = subName;
-          opt.innerText = subName;
-          subSelect.appendChild(opt);
-        }
-        updateExerciseOptions();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
     function updateExerciseOptions() {
-      try {
-        const muscle = document.getElementById('muscle-group').value;
-        const subName = document.getElementById('sub-category').value;
-        const exerciseSelect = document.getElementById('exercise-name');
-        if (!exerciseSelect) return;
-        exerciseSelect.innerHTML = '';
-
-        const exercises = structuredExercisesMap[muscle]?.[subName] || [];
-        exercises.forEach(ex => {
-          const opt = document.createElement('option');
-          opt.value = ex;
-          opt.innerText = ex;
-          exerciseSelect.appendChild(opt);
-        });
-        loadPreviousSetData();
-
-        if (muscle === 'أرجل' || muscle === 'ظهر' || muscle === 'صدر') {
-          startRestTimer(180);
-        } else if (muscle === 'أكتاف') {
-          startRestTimer(120);
-        } else {
-          startRestTimer(90);
-        }
-      } catch (e) {
-        console.error(e);
+      const group = document.getElementById('muscle-group').value;
+      const select = document.getElementById('exercise-name');
+      if (!select) return;
+      select.innerHTML = '';
+      
+      const list = exercisesMap[group] || [];
+      list.forEach(ex => {
+        const opt = document.createElement('option');
+        opt.value = ex;
+        opt.innerText = ex;
+        select.appendChild(opt);
+      });
+      loadPreviousSetData();
+      
+      if (group === 'أرجل' || group === 'ظهر' || group === 'صدر') {
+        startRestTimer(180);
+      } else if (group === 'أكتاف') {
+        startRestTimer(120);
+      } else {
+        startRestTimer(90);
       }
     }
 
     function loadPreviousSetData() {
-      try {
-        const exName = document.getElementById('exercise-name')?.value;
-        if (!exName) return;
-        
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
-        
-        for (let i = 1; i <= 4; i++) {
-          const wEl = document.getElementById(`s${i}-w`);
-          const rEl = document.getElementById(`s${i}-r`);
-          if (wEl) wEl.value = '';
-          if (rEl) rEl.value = '';
-        }
+      const exName = document.getElementById('exercise-name')?.value;
+      if (!exName) return;
+      
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
+      
+      for (let i = 1; i <= 4; i++) {
+        const wEl = document.getElementById(`s${i}-w`);
+        const rEl = document.getElementById(`s${i}-r`);
+        if (wEl) wEl.value = '';
+        if (rEl) rEl.value = '';
+      }
 
-        if (matchedLogs.length > 0) {
-          const lastRecord = matchedLogs[matchedLogs.length - 1];
-          if (lastRecord && lastRecord.sets) {
-            for (let i = 0; i < 4; i++) {
-              if (lastRecord.sets[i]) {
-                const wEl = document.getElementById(`s${i+1}-w`);
-                const rEl = document.getElementById(`s${i+1}-r`);
-                if (wEl && lastRecord.sets[i].weight > 0) wEl.value = lastRecord.sets[i].weight;
-                if (rEl && lastRecord.sets[i].reps > 0) rEl.value = lastRecord.sets[i].reps;
-              }
+      if (matchedLogs.length > 0) {
+        const lastRecord = matchedLogs[matchedLogs.length - 1];
+        if (lastRecord && lastRecord.sets) {
+          for (let i = 0; i < 4; i++) {
+            if (lastRecord.sets[i]) {
+              const wEl = document.getElementById(`s${i+1}-w`);
+              const rEl = document.getElementById(`s${i+1}-r`);
+              if (wEl && lastRecord.sets[i].weight > 0) wEl.value = lastRecord.sets[i].weight;
+              if (rEl && lastRecord.sets[i].reps > 0) rEl.value = lastRecord.sets[i].reps;
             }
           }
         }
-      } catch (e) {
-        console.error(e);
       }
     }
 
     function filterChartExerciseOptions() {
-      try {
-        const filterGroup = document.getElementById('chart-muscle-filter')?.value;
-        const select = document.getElementById('chart-exercise-select');
-        if (!select) return;
-        select.innerHTML = '';
+      const filterGroup = document.getElementById('chart-muscle-filter')?.value;
+      const select = document.getElementById('chart-exercise-select');
+      if (!select) return;
+      select.innerHTML = '';
 
-        let list = [];
-        if (filterGroup === 'جميع العضلات') {
-          for (let m in structuredExercisesMap) {
-            for (let sub in structuredExercisesMap[m]) {
-              list.push(...structuredExercisesMap[m][sub]);
-            }
-          }
-        } else {
-          const subs = structuredExercisesMap[filterGroup] || {};
-          for (let sub in subs) {
-            list.push(...subs[sub]);
-          }
-        }
-
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        logs.forEach(l => {
-          if (l.exName && !list.includes(l.exName)) list.push(l.exName);
-        });
-
-        list.forEach(ex => {
-          const opt = document.createElement('option');
-          opt.value = ex;
-          opt.innerText = ex;
-          select.appendChild(opt);
-        });
-        renderWorkoutChart();
-      } catch (e) {
-        console.error(e);
+      let list = [];
+      if (filterGroup === 'جميع العضلات') {
+        Object.values(exercisesMap).forEach(arr => list.push(...arr));
+      } else {
+        list = exercisesMap[filterGroup] || [];
       }
+
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      logs.forEach(l => {
+        if (l.exName && !list.includes(l.exName)) list.push(l.exName);
+      });
+
+      list.forEach(ex => {
+        const opt = document.createElement('option');
+        opt.value = ex;
+        opt.innerText = ex;
+        select.appendChild(opt);
+      });
+      renderWorkoutChart();
     }
 
     // Workout Handler
     function saveWorkout() {
-      try {
-        const exName = document.getElementById('exercise-name').value;
-        const muscle = document.getElementById('muscle-group').value;
-        const sub = document.getElementById('sub-category').value;
-        const date = new Date().toLocaleDateString('ar-MA');
+      const exName = document.getElementById('exercise-name').value;
+      const muscle = document.getElementById('muscle-group').value;
+      const date = new Date().toLocaleDateString('ar-MA');
 
-        let sets = [];
-        for (let i = 1; i <= 4; i++) {
-          const w = document.getElementById(`s${i}-w`).value || 0;
-          const r = document.getElementById(`s${i}-r`).value || 0;
-          sets.push({ weight: parseFloat(w), reps: parseInt(r) });
-        }
-
-        const entry = { id: Date.now(), date, muscle, sub, exName, sets };
-        
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        logs.push(entry);
-        
-        localStorage.setItem('smayka_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
-
-        alert('تم حفظ التمرين وزاويته بنجاح في الأرشيف والمبيان! 💪');
-        populateArchiveExerciseDropdown();
-        loadAllArchives();
-      } catch (e) {
-        console.error(e);
+      let sets = [];
+      for (let i = 1; i <= 4; i++) {
+        const w = document.getElementById(`s${i}-w`).value || 0;
+        const r = document.getElementById(`s${i}-r`).value || 0;
+        sets.push({ weight: parseFloat(w), reps: parseInt(r) });
       }
+
+      const entry = { id: Date.now(), date, muscle, exName, sets };
+      
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      logs.push(entry);
+      
+      localStorage.setItem('smayka_logs', JSON.stringify(logs));
+      localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
+
+      alert('تم حفظ التمرين بنجاح في الأرشيف والمبيان! 💪');
+      populateArchiveExerciseDropdown();
+      loadAllArchives();
     }
 
     // Edit Workout Item Action
     function editWorkoutItem(id) {
-      try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        const item = logs.find(l => l.id === id);
-        if (!item) return;
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const item = logs.find(l => l.id === id);
+      if (!item) return;
 
-        for (let i = 0; i < 4; i++) {
-          let currentW = item.sets[i]?.weight || 0;
-          let currentR = item.sets[i]?.reps || 0;
-          
-          let newW = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل الوزن (كغ):`, currentW);
-          if (newW === null) return;
-          
-          let newR = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل التكرارات:`, currentR);
-          if (newR === null) return;
+      for (let i = 0; i < 4; i++) {
+        let currentW = item.sets[i]?.weight || 0;
+        let currentR = item.sets[i]?.reps || 0;
+        
+        let newW = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل الوزن (كغ):`, currentW);
+        if (newW === null) return;
+        
+        let newR = prompt(`تعديل الجلسة ${i+1} لتمرين (${item.exName})\nأدخل التكرارات:`, currentR);
+        if (newR === null) return;
 
-          if (!item.sets[i]) item.sets[i] = {};
-          item.sets[i].weight = parseFloat(newW) || 0;
-          item.sets[i].reps = parseInt(newR) || 0;
-        }
-
-        localStorage.setItem('smayka_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
-        alert('تم تعديل السجل بنجاح! ✏️');
-        loadAllArchives();
-        renderWorkoutChart();
-      } catch (e) {
-        console.error(e);
+        if (!item.sets[i]) item.sets[i] = {};
+        item.sets[i].weight = parseFloat(newW) || 0;
+        item.sets[i].reps = parseInt(newR) || 0;
       }
+
+      localStorage.setItem('smayka_logs', JSON.stringify(logs));
+      localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
+      alert('تم تعديل السجل بنجاح! ✏️');
+      loadAllArchives();
+      renderWorkoutChart();
     }
 
     // Delete Item Actions
@@ -1015,285 +905,269 @@
     }
 
     function populateArchiveExerciseDropdown() {
-      try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        const select = document.getElementById('archive-exercise-select');
-        if (!select) return;
-        
-        const currentSelected = select.value;
-        select.innerHTML = '<option value="ALL">عرض كل التمارين المحفوظة</option>';
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const select = document.getElementById('archive-exercise-select');
+      if (!select) return;
+      
+      const currentSelected = select.value;
+      select.innerHTML = '<option value="ALL">عرض كل التمارين المحفوظة</option>';
 
-        let uniqueExercises = [...new Set(logs.map(l => l.exName).filter(Boolean))];
-        uniqueExercises.forEach(ex => {
-          let opt = document.createElement('option');
-          opt.value = ex;
-          opt.innerText = ex;
-          select.appendChild(opt);
-        });
+      let uniqueExercises = [...new Set(logs.map(l => l.exName))];
+      uniqueExercises.forEach(ex => {
+        let opt = document.createElement('option');
+        opt.value = ex;
+        opt.innerText = ex;
+        select.appendChild(opt);
+      });
 
-        if (currentSelected) select.value = currentSelected;
-      } catch (e) {
-        console.error(e);
-      }
+      if (currentSelected) select.value = currentSelected;
     }
 
     function loadAllArchives() {
-      try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        const workoutContainer = document.getElementById('history-list-workouts');
-        const selectedEx = document.getElementById('archive-exercise-select')?.value || 'ALL';
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const workoutContainer = document.getElementById('history-list-workouts');
+      const selectedEx = document.getElementById('archive-exercise-select')?.value || 'ALL';
 
-        const filteredLogs = logs.filter(l => {
-          if (!l || !l.exName) return false;
-          if (selectedEx === 'ALL') return true;
-          return isSameExercise(l.exName, selectedEx);
-        });
+      const filteredLogs = logs.filter(l => {
+        if (selectedEx === 'ALL') return true;
+        return isSameExercise(l.exName, selectedEx);
+      });
 
-        if (workoutContainer) {
-          if (!filteredLogs || filteredLogs.length === 0) {
-            workoutContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
-          } else {
-            workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => {
-              const setsArr = l.sets || [];
-              return `
-                <div class="history-item">
-                  <div>
-                    <b>🗓️ ${l.date || 'تاريخ'} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span></b>
-                    <div style="font-size:0.75rem; color:#2196F3;">الزاوية: ${l.sub || 'عام'} (${l.muscle || ''})</div>
-                    <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-                      ج1: ${setsArr[0]?.weight || 0}كغ (${setsArr[0]?.reps || 0}) |
-                      ج2: ${setsArr[1]?.weight || 0}كغ (${setsArr[1]?.reps || 0}) |
-                      ج3: ${setsArr[2]?.weight || 0}كغ (${setsArr[2]?.reps || 0}) |
-                      ج4: ${setsArr[3]?.weight || 0}كغ (${setsArr[3]?.reps || 0})
-                    </div>
-                  </div>
-                  <div class="action-btns">
-                    <button class="btn-edit-item" onclick="editWorkoutItem(${l.id || 0})">تعديل ✏️</button>
-                    <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
-                  </div>
-                </div>
-              `;
-            }).join('');
-          }
-        }
-
-        let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
-        const nutritionContainer = document.getElementById('history-list-nutrition');
-        if (nutritionContainer) {
-          if (!nutritionLogs || nutritionLogs.length === 0) {
-            nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
-          } else {
-            nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
+      if (workoutContainer) {
+        if (!filteredLogs || filteredLogs.length === 0) {
+          workoutContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
+        } else {
+          workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => {
+            const setsArr = l.sets || [];
+            return `
               <div class="history-item">
                 <div>
-                  <b>🗓️ ${n.date || ''} - مجموع اليوم</b>
+                  <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span> (${l.muscle || ''})</b>
                   <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-                    بروتين: ${n.p || 0}غ | كارب: ${n.c || 0}غ | دهون: ${n.f || 0}غ | سعرات: ${n.cal || 0} Kcal
+                    ج1: ${setsArr[0]?.weight || 0}كغ (${setsArr[0]?.reps || 0}) |
+                    ج2: ${setsArr[1]?.weight || 0}كغ (${setsArr[1]?.reps || 0}) |
+                    ج3: ${setsArr[2]?.weight || 0}كغ (${setsArr[2]?.reps || 0}) |
+                    ج4: ${setsArr[3]?.weight || 0}كغ (${setsArr[3]?.reps || 0})
                   </div>
                 </div>
-                <button class="btn-delete-item" onclick="deleteNutritionItem(${nutritionLogs.length - 1 - idx})">حذف 🗑️</button>
-              </div>
-            `).join('');
-          }
-        }
-
-        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
-        const weightsContainer = document.getElementById('history-list-weights');
-        if (weightsContainer) {
-          if (!weights || weights.length === 0) {
-            weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
-          } else {
-            weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
-              <div class="history-item">
-                <div>
-                  <b>🗓️ الفترة/الشهر: ${w.date || ''}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight || 0} كغ</b>
+                <div class="action-btns">
+                  <button class="btn-edit-item" onclick="editWorkoutItem(${l.id || 0})">تعديل ✏️</button>
+                  <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
                 </div>
-                <button class="btn-delete-item" onclick="deleteWeightItem(${weights.length - 1 - idx})">حذف 🗑️</button>
               </div>
-            `).join('');
-          }
+            `;
+          }).join('');
         }
-      } catch (e) {
-        console.error(e);
+      }
+
+      let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
+      const nutritionContainer = document.getElementById('history-list-nutrition');
+      if (nutritionContainer) {
+        if (!nutritionLogs || nutritionLogs.length === 0) {
+          nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
+        } else {
+          nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
+            <div class="history-item">
+              <div>
+                <b>🗓️ ${n.date} - مجموع اليوم</b>
+                <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                  بروتين: ${n.p}غ | كارب: ${n.c}غ | دهون: ${n.f}غ | سعرات: ${n.cal} Kcal
+                </div>
+              </div>
+              <button class="btn-delete-item" onclick="deleteNutritionItem(${nutritionLogs.length - 1 - idx})">حذف 🗑️</button>
+            </div>
+          `).join('');
+        }
+      }
+
+      let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+      const weightsContainer = document.getElementById('history-list-weights');
+      if (weightsContainer) {
+        if (!weights || weights.length === 0) {
+          weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
+        } else {
+          weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
+            <div class="history-item">
+              <div>
+                <b>🗓️ الفترة/الشهر: ${w.date}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight} كغ</b>
+              </div>
+              <button class="btn-delete-item" onclick="deleteWeightItem(${weights.length - 1 - idx})">حذف 🗑️</button>
+            </div>
+          `).join('');
+        }
       }
     }
 
     let workoutChartInstance = null;
     function renderWorkoutChart() {
-      try {
-        const exName = document.getElementById('chart-exercise-select')?.value;
-        if (!exName) return;
-        
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
-        const filtered = logs.filter(l => l && l.exName && isSameExercise(l.exName, exName));
+      const exName = document.getElementById('chart-exercise-select')?.value;
+      if (!exName) return;
+      
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const filtered = logs.filter(l => isSameExercise(l.exName, exName));
 
-        const labels = filtered.map(l => l.date || '');
-        const maxWeights = filtered.map(l => Math.max(...(l.sets || []).map(s => parseFloat(s.weight) || 0)));
-        const avgReps = filtered.map(l => {
-          let validReps = (l.sets || []).map(s => parseInt(s.reps) || 0).filter(r => r > 0);
-          if (validReps.length === 0) return 0;
-          let sum = validReps.reduce((a, b) => a + b, 0);
-          return (sum / validReps.length).toFixed(1);
-        });
+      const labels = filtered.map(l => l.date);
+      const maxWeights = filtered.map(l => Math.max(...(l.sets || []).map(s => parseFloat(s.weight) || 0)));
+      const avgReps = filtered.map(l => {
+        let validReps = (l.sets || []).map(s => parseInt(s.reps) || 0).filter(r => r > 0);
+        if (validReps.length === 0) return 0;
+        let sum = validReps.reduce((a, b) => a + b, 0);
+        return (sum / validReps.length).toFixed(1);
+      });
 
-        const canvasEl = document.getElementById('workoutChart');
-        if (!canvasEl) return;
-        const ctx = canvasEl.getContext('2d');
-        if (workoutChartInstance) workoutChartInstance.destroy();
+      const canvasEl = document.getElementById('workoutChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
+      if (workoutChartInstance) workoutChartInstance.destroy();
 
-        workoutChartInstance = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels.length ? labels : ['لا توجد بيانات'],
-            datasets: [
-              {
-                label: 'أعلى وزن (كغ)',
-                data: maxWeights.length ? maxWeights : [0],
-                borderColor: '#e53935',
-                backgroundColor: 'rgba(229, 57, 53, 0.1)',
-                borderWidth: 3,
-                pointRadius: 5,
-                pointBackgroundColor: '#e53935',
-                yAxisID: 'y',
-                fill: false,
-                tension: 0.1
-              },
-              {
-                label: 'متوسط التكرارات',
-                data: avgReps.length ? avgReps : [0],
-                borderColor: '#1e88e5',
-                backgroundColor: 'rgba(30, 136, 229, 0.1)',
-                borderWidth: 3,
-                pointRadius: 5,
-                pointBackgroundColor: '#1e88e5',
-                yAxisID: 'y1',
-                fill: false,
-                tension: 0.1
-              }
-            ]
-          },
-          options: {
-            responsive: true,
-            plugins: { 
-              legend: { 
-                display: true,
-                labels: { color: '#000', font: { weight: 'bold' } } 
-              } 
+      workoutChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length ? labels : ['لا توجد بيانات'],
+          datasets: [
+            {
+              label: 'أعلى وزن (كغ)',
+              data: maxWeights.length ? maxWeights : [0],
+              borderColor: '#e53935',
+              backgroundColor: 'rgba(229, 57, 53, 0.1)',
+              borderWidth: 3,
+              pointRadius: 5,
+              pointBackgroundColor: '#e53935',
+              yAxisID: 'y',
+              fill: false,
+              tension: 0.1
             },
-            scales: {
-              x: { 
-                grid: { color: '#d0d0d0', lineWidth: 1 }, 
-                ticks: { color: '#000', font: { weight: 'bold' } } 
-              },
-              y: {
-                type: 'linear',
-                display: true,
-                position: 'left',
-                grid: { color: '#d0d0d0', lineWidth: 1 },
-                ticks: { color: '#e53935', font: { weight: 'bold' } },
-                title: { display: true, text: 'الوزن (كغ)', color: '#e53935', font: { weight: 'bold' } }
-              },
-              y1: {
-                type: 'linear',
-                display: true,
-                position: 'right',
-                grid: { drawOnChartArea: false },
-                ticks: { color: '#1e88e5', font: { weight: 'bold' } },
-                title: { display: true, text: 'التكرارات', color: '#1e88e5', font: { weight: 'bold' } }
-              }
-            }
-          }
-        });
-
-        const aiBox = document.getElementById('ai-coach-analysis');
-        if (aiBox) {
-          if (maxWeights.length === 0) {
-            aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
-          } else if (maxWeights.length === 1) {
-            aiBox.innerHTML = `💡 <b>تحليل أول حصة:</b> تم تسجيل أول حصة لتمرين (${exName}) بأعلى وزن <b>${maxWeights[0]} كغ</b> بمتوسط تكرارات <b>${avgReps[0]}</b>. واصل الاستمرار للبدء في المقارنة والتطور! 💪`;
-          } else {
-            const lastW = maxWeights[maxWeights.length - 1];
-            const prevW = maxWeights[maxWeights.length - 2];
-            const lastR = avgReps[avgReps.length - 1];
-            
-            let diffMsg = "";
-            if (lastW > prevW) {
-              diffMsg = `ارتفع أعلى وزن من <b>${prevW} كغ</b> إلى <b>${lastW} كغ</b>! أداء ممتاز في تصاعد 🔥`;
-            } else if (lastW === prevW) {
-              diffMsg = `وزنك مستقر عند <b>${lastW} كغ</b>. حاول إضافة تكرار إضافي الحصة القادمة لكسر الثبات! ⚖️`;
-            } else {
-              diffMsg = `انخفض الوزن قليلاً عن الحصة السابقة (كان ${prevW} كغ). احرص على التغذية الجيدة والراحة! ⚠️`;
-            }
-
-            aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج (${maxWeights.length} حصص مسجلة):</b> في آخر حصة لعبت بـ <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. ${diffMsg}`;
-          }
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    let weightChartInstance = null;
-    function renderWeightChart() {
-      try {
-        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
-        const labels = weights.map(w => w.date || '');
-        const data = weights.map(w => w.weight || 0);
-
-        const canvasEl = document.getElementById('weightChart');
-        if (!canvasEl) return;
-        const ctx = canvasEl.getContext('2d');
-        if (weightChartInstance) weightChartInstance.destroy();
-
-        weightChartInstance = new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: labels.length ? labels : ['لا توجد بيانات'],
-            datasets: [{
-              label: 'وزن الجسم الشهري (كغ)',
-              data: data.length ? data : [0],
+            {
+              label: 'متوسط التكرارات',
+              data: avgReps.length ? avgReps : [0],
               borderColor: '#1e88e5',
               backgroundColor: 'rgba(30, 136, 229, 0.1)',
               borderWidth: 3,
               pointRadius: 5,
               pointBackgroundColor: '#1e88e5',
-              fill: false
-            }]
+              yAxisID: 'y1',
+              fill: false,
+              tension: 0.1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          plugins: { 
+            legend: { 
+              display: true,
+              labels: { color: '#000', font: { weight: 'bold' } } 
+            } 
           },
-          options: {
-            responsive: true,
-            plugins: { legend: { labels: { color: '#000', font: { weight: 'bold' } } } },
-            scales: {
-              x: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } },
-              y: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } }
+          scales: {
+            x: { 
+              grid: { color: '#d0d0d0', lineWidth: 1 }, 
+              ticks: { color: '#000', font: { weight: 'bold' } } 
+            },
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              grid: { color: '#d0d0d0', lineWidth: 1 },
+              ticks: { color: '#e53935', font: { weight: 'bold' } },
+              title: { display: true, text: 'الوزن (كغ)', color: '#e53935', font: { weight: 'bold' } }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              ticks: { color: '#1e88e5', font: { weight: 'bold' } },
+              title: { display: true, text: 'التكرارات', color: '#1e88e5', font: { weight: 'bold' } }
             }
           }
-        });
+        }
+      });
 
-        const aiWeightBox = document.getElementById('ai-weight-analysis');
-        if (aiWeightBox && data.length >= 2) {
-          const diff = data[data.length - 1] - data[0];
-          if (diff > 0) {
-            aiWeightBox.innerHTML = `📈 <b>تحليل الوزن الشهري:</b> لقد زاد وزنك بـ <b>+${diff.toFixed(1)} كغ</b> عبر الفترات المسجلة. تقدم ممتاز في مرحلة البناء والضخامة!`;
-          } else if (diff < 0) {
-            aiWeightBox.innerHTML = `📉 <b>تحليل الوزن الشهري:</b> لقد انخفض وزنك بـ <b>${diff.toFixed(1)} كغ</b>. متابعة جيدة لمرحلة التنشيف (Cut).`;
+      const aiBox = document.getElementById('ai-coach-analysis');
+      if (aiBox) {
+        if (maxWeights.length === 0) {
+          aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
+        } else if (maxWeights.length === 1) {
+          aiBox.innerHTML = `💡 <b>تحليل أول حصة:</b> تم تسجيل أول حصة لتمرين (${exName}) بأعلى وزن <b>${maxWeights[0]} كغ</b> بمتوسط تكرارات <b>${avgReps[0]}</b>. واصل الاستمرار للبدء في المقارنة والتطور! 💪`;
+        } else {
+          const lastW = maxWeights[maxWeights.length - 1];
+          const prevW = maxWeights[maxWeights.length - 2];
+          const lastR = avgReps[avgReps.length - 1];
+          
+          let diffMsg = "";
+          if (lastW > prevW) {
+            diffMsg = `ارتفع أعلى وزن من <b>${prevW} كغ</b> إلى <b>${lastW} كغ</b>! أداء ممتاز في تصاعد 🔥`;
+          } else if (lastW === prevW) {
+            diffMsg = `وزنك مستقر عند <b>${lastW} كغ</b>. حاول إضافة تكرار إضافي الحصة القادمة لكسر الثبات! ⚖️`;
           } else {
-            aiWeightBox.innerHTML = `⚖️ <b>تحليل الوزن الشهري:</b> وزنك مستقر وثابت بين السجلات.`;
+            diffMsg = `انخفض الوزن قليلاً عن الحصة السابقة (كان ${prevW} كغ). احرص على التغذية الجيدة والراحة! ⚠️`;
+          }
+
+          aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج (${maxWeights.length} حصص مسجلة):</b> في آخر حصة لعبت بـ <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. ${diffMsg}`;
+        }
+      }
+    }
+
+    let weightChartInstance = null;
+    function renderWeightChart() {
+      let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+      const labels = weights.map(w => w.date);
+      const data = weights.map(w => w.weight);
+
+      const canvasEl = document.getElementById('weightChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
+      if (weightChartInstance) weightChartInstance.destroy();
+
+      weightChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: labels.length ? labels : ['لا توجد بيانات'],
+          datasets: [{
+            label: 'وزن الجسم الشهري (كغ)',
+            data: data.length ? data : [0],
+            borderColor: '#1e88e5',
+            backgroundColor: 'rgba(30, 136, 229, 0.1)',
+            borderWidth: 3,
+            pointRadius: 5,
+            pointBackgroundColor: '#1e88e5',
+            fill: false
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: { legend: { labels: { color: '#000', font: { weight: 'bold' } } } },
+          scales: {
+            x: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } },
+            y: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } }
           }
         }
-      } catch (e) {
-        console.error(e);
+      });
+
+      const aiWeightBox = document.getElementById('ai-weight-analysis');
+      if (aiWeightBox && data.length >= 2) {
+        const diff = data[data.length - 1] - data[0];
+        if (diff > 0) {
+          aiWeightBox.innerHTML = `📈 <b>تحليل الوزن الشهري:</b> لقد زاد وزنك بـ <b>+${diff.toFixed(1)} كغ</b> عبر الفترات المسجلة. تقدم ممتاز في مرحلة البناء والضخامة!`;
+        } else if (diff < 0) {
+          aiWeightBox.innerHTML = `📉 <b>تحليل الوزن الشهري:</b> لقد انخفض وزنك بـ <b>${diff.toFixed(1)} كغ</b>. متابعة جيدة لمرحلة التنشيف (Cut).`;
+        } else {
+          aiWeightBox.innerHTML = `⚖️ <b>تحليل الوزن الشهري:</b> وزنك مستقر وثابت بين السجلات.`;
+        }
       }
     }
 
     // Initialize App safely on load
     window.onload = function() {
       try {
-        updateSubCategoryOptions();
+        updateExerciseOptions();
         filterChartExerciseOptions();
         renderMacrosChart();
+        populateArchiveExerciseDropdown();
+        loadAllArchives();
       } catch (e) {
-        console.error(e);
+        console.error("Initialization error:", e);
       }
     };
   </script>
