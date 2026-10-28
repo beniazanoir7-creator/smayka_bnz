@@ -471,29 +471,37 @@
   </div>
 
   <script>
-    // Navigation Tabs
+    // Navigation Tabs safely managed
     function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
-      
-      if (tabId === 'analytics') {
-        renderWorkoutChart();
-        renderWeightChart();
-      } else if (tabId === 'macros') {
-        renderMacrosChart();
-      } else if (tabId === 'archive') {
-        populateArchiveExerciseDropdown();
-        loadAllArchives();
+      try {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        event.target.classList.add('active');
+        
+        if (tabId === 'analytics') {
+          renderWorkoutChart();
+          renderWeightChart();
+        } else if (tabId === 'macros') {
+          renderMacrosChart();
+        } else if (tabId === 'archive') {
+          populateArchiveExerciseDropdown();
+          loadAllArchives();
+        }
+      } catch (e) {
+        console.error(e);
       }
     }
 
     function switchArchiveTab(subId) {
-      document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
-      document.getElementById(subId).style.display = 'block';
-      event.target.classList.add('active');
+      try {
+        document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById(subId).style.display = 'block';
+        event.target.classList.add('active');
+      } catch (e) {
+        console.error(e);
+      }
     }
 
     // Smart Rest Timer Engine
@@ -535,16 +543,18 @@
     let allFoodOptions = [];
     window.addEventListener('DOMContentLoaded', () => {
       const select = document.getElementById('food-item');
-      for (let opt of select.options) {
-        allFoodOptions.push({
-          value: opt.value,
-          text: opt.text,
-          p: opt.getAttribute('data-p'),
-          c: opt.getAttribute('data-c'),
-          f: opt.getAttribute('data-f'),
-          cal: opt.getAttribute('data-cal'),
-          group: opt.parentElement.label
-        });
+      if (select) {
+        for (let opt of select.options) {
+          allFoodOptions.push({
+            value: opt.value,
+            text: opt.text,
+            p: opt.getAttribute('data-p'),
+            c: opt.getAttribute('data-c'),
+            f: opt.getAttribute('data-f'),
+            cal: opt.getAttribute('data-cal'),
+            group: opt.parentElement.label
+          });
+        }
       }
     });
 
@@ -595,7 +605,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Advanced Structured Exercises by Muscle -> Sub-Category (Angles) -> Exercises (ALL DROPDOWNS, NO TYPING!)
+    // Advanced Structured Exercises by Muscle -> Sub-Category (Angles) -> Exercises (ALL DROPDOWNS)
     const structuredExercisesMap = {
       'صدر': {
         'الصدر العلوي (Incline)': [
@@ -700,6 +710,7 @@
     function updateSubCategoryOptions() {
       const muscle = document.getElementById('muscle-group').value;
       const subSelect = document.getElementById('sub-category');
+      if (!subSelect) return;
       subSelect.innerHTML = '';
 
       const subCategories = structuredExercisesMap[muscle] || {};
@@ -716,6 +727,7 @@
       const muscle = document.getElementById('muscle-group').value;
       const subName = document.getElementById('sub-category').value;
       const exerciseSelect = document.getElementById('exercise-name');
+      if (!exerciseSelect) return;
       exerciseSelect.innerHTML = '';
 
       const exercises = structuredExercisesMap[muscle]?.[subName] || [];
@@ -727,7 +739,6 @@
       });
       loadPreviousSetData();
 
-      // Auto suggest rest timer
       if (muscle === 'أرجل' || muscle === 'ظهر' || muscle === 'صدر') {
         startRestTimer(180);
       } else if (muscle === 'أكتاف') {
@@ -738,14 +749,17 @@
     }
 
     function loadPreviousSetData() {
-      const exName = document.getElementById('exercise-name').value;
-      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const exName = document.getElementById('exercise-name')?.value;
+      if (!exName) return;
       
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
       
       for (let i = 1; i <= 4; i++) {
-        document.getElementById(`s${i}-w`).value = '';
-        document.getElementById(`s${i}-r`).value = '';
+        const wEl = document.getElementById(`s${i}-w`);
+        const rEl = document.getElementById(`s${i}-r`);
+        if (wEl) wEl.value = '';
+        if (rEl) rEl.value = '';
       }
 
       if (matchedLogs.length > 0) {
@@ -753,12 +767,10 @@
         if (lastRecord && lastRecord.sets) {
           for (let i = 0; i < 4; i++) {
             if (lastRecord.sets[i]) {
-              if (lastRecord.sets[i].weight > 0) {
-                document.getElementById(`s${i+1}-w`).value = lastRecord.sets[i].weight;
-              }
-              if (lastRecord.sets[i].reps > 0) {
-                document.getElementById(`s${i+1}-r`).value = lastRecord.sets[i].reps;
-              }
+              const wEl = document.getElementById(`s${i+1}-w`);
+              const rEl = document.getElementById(`s${i+1}-r`);
+              if (wEl && lastRecord.sets[i].weight > 0) wEl.value = lastRecord.sets[i].weight;
+              if (rEl && lastRecord.sets[i].reps > 0) rEl.value = lastRecord.sets[i].reps;
             }
           }
         }
@@ -766,8 +778,9 @@
     }
 
     function filterChartExerciseOptions() {
-      const filterGroup = document.getElementById('chart-muscle-filter').value;
+      const filterGroup = document.getElementById('chart-muscle-filter')?.value;
       const select = document.getElementById('chart-exercise-select');
+      if (!select) return;
       select.innerHTML = '';
 
       let list = [];
@@ -783,6 +796,12 @@
           list.push(...subs[sub]);
         }
       }
+
+      // Also include legacy exercises from logs so they don't disappear in charts
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      logs.forEach(l => {
+        if (l.exName && !list.includes(l.exName)) list.push(l.exName);
+      });
 
       list.forEach(ex => {
         const opt = document.createElement('option');
@@ -884,7 +903,7 @@
     
     function addFood() {
       const select = document.getElementById('food-item');
-      if (select.options.length === 0) return alert('الرجاء اختيار مادة غذائية صحيحة');
+      if (!select || select.options.length === 0) return alert('الرجاء اختيار مادة غذائية صحيحة');
       const opt = select.options[select.selectedIndex];
       const weight = parseFloat(document.getElementById('food-weight').value) || 0;
 
@@ -907,6 +926,7 @@
 
     function updateAIFoodCoach() {
       const aiFoodBox = document.getElementById('ai-food-analysis');
+      if (!aiFoodBox) return;
       if (totalCal === 0) {
         aiFoodBox.innerHTML = '🤖 <b>تحليل الروبوت الآلي للطعام:</b> لم تقم بإضافة أي طعام بعد اليوم.';
       } else if (totalCal < 2000) {
@@ -943,7 +963,9 @@
 
     let macrosChartInstance = null;
     function renderMacrosChart() {
-      const ctx = document.getElementById('macrosChart').getContext('2d');
+      const canvasEl = document.getElementById('macrosChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
       if (macrosChartInstance) macrosChartInstance.destroy();
 
       macrosChartInstance = new Chart(ctx, {
@@ -964,7 +986,8 @@
     }
 
     function saveBodyWeight() {
-      const w = parseFloat(document.getElementById('body-weight-input').value);
+      const wInput = document.getElementById('body-weight-input');
+      const w = parseFloat(wInput?.value);
       if (!w) return alert('أدخل وزناً صحيحاً');
       const date = new Date().toLocaleDateString('ar-MA', { year: 'numeric', month: 'long' });
       let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
@@ -1004,80 +1027,92 @@
         return isSameExercise(l.exName, selectedEx);
       });
 
-      if (!filteredLogs || filteredLogs.length === 0) {
-        workoutContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
-      } else {
-        workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => `
-          <div class="history-item">
-            <div>
-              <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName}</span></b>
-              <div style="font-size:0.75rem; color:#2196F3;">الزاوية: ${l.sub || 'عام'} (${l.muscle || ''})</div>
-              <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-                ج1: ${l.sets[0]?.weight || 0}كغ (${l.sets[0]?.reps || 0}) |
-                ج2: ${l.sets[1]?.weight || 0}كغ (${l.sets[1]?.reps || 0}) |
-                ج3: ${l.sets[2]?.weight || 0}كغ (${l.sets[2]?.reps || 0}) |
-                ج4: ${l.sets[3]?.weight || 0}كغ (${l.sets[3]?.reps || 0})
+      if (workoutContainer) {
+        if (!filteredLogs || filteredLogs.length === 0) {
+          workoutContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
+        } else {
+          workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => {
+            const setsArr = l.sets || [];
+            return `
+              <div class="history-item">
+                <div>
+                  <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span></b>
+                  <div style="font-size:0.75rem; color:#2196F3;">الزاوية: ${l.sub || 'عام'} (${l.muscle || ''})</div>
+                  <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                    ج1: ${sets[0]?.weight || 0}كغ (${sets[0]?.reps || 0}) |
+                    ج2: ${sets[1]?.weight || 0}كغ (${sets[1]?.reps || 0}) |
+                    ج3: ${sets[2]?.weight || 0}كغ (${sets[2]?.reps || 0}) |
+                    ج4: ${sets[3]?.weight || 0}كغ (${sets[3]?.reps || 0})
+                  </div>
+                </div>
+                <div class="action-btns">
+                  <button class="btn-edit-item" onclick="editWorkoutItem(${l.id || 0})">تعديل ✏️</button>
+                  <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
+                </div>
               </div>
-            </div>
-            <div class="action-btns">
-              <button class="btn-edit-item" onclick="editWorkoutItem(${l.id || 0})">تعديل ✏️</button>
-              <button class="btn-delete-item" onclick="deleteWorkoutItem(${l.id || 0})">حذف 🗑️</button>
-            </div>
-          </div>
-        `).join('');
+            `;
+          }).join('');
+        }
       }
 
       let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
       const nutritionContainer = document.getElementById('history-list-nutrition');
-      if (!nutritionLogs || nutritionLogs.length === 0) {
-        nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
-      } else {
-        nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
-          <div class="history-item">
-            <div>
-              <b>🗓️ ${n.date} - مجموع اليوم</b>
-              <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
-                بروتين: ${n.p}غ | كارب: ${n.c}غ | دهون: ${n.f}غ | سعرات: ${n.cal} Kcal
+      if (nutritionContainer) {
+        if (!nutritionLogs || nutritionLogs.length === 0) {
+          nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
+        } else {
+          nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
+            <div class="history-item">
+              <div>
+                <b>🗓️ ${n.date} - مجموع اليوم</b>
+                <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                  بروتين: ${n.p}غ | كارب: ${n.c}غ | دهون: ${n.f}غ | سعرات: ${n.cal} Kcal
+                </div>
               </div>
+              <button class="btn-delete-item" onclick="deleteNutritionItem(${nutritionLogs.length - 1 - idx})">حذف 🗑️</button>
             </div>
-            <button class="btn-delete-item" onclick="deleteNutritionItem(${nutritionLogs.length - 1 - idx})">حذف 🗑️</button>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
 
       let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
       const weightsContainer = document.getElementById('history-list-weights');
-      if (!weights || weights.length === 0) {
-        weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
-      } else {
-        weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
-          <div class="history-item">
-            <div>
-              <b>🗓️ الفترة/الشهر: ${w.date}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight} كغ</b>
+      if (weightsContainer) {
+        if (!weights || weights.length === 0) {
+          weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
+        } else {
+          weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
+            <div class="history-item">
+              <div>
+                <b>🗓️ الفترة/الشهر: ${w.date}</b> - الوزن المسجل: <b style="color:#FF9800;">${w.weight} كغ</b>
+              </div>
+              <button class="btn-delete-item" onclick="deleteWeightItem(${weights.length - 1 - idx})">حذف 🗑️</button>
             </div>
-            <button class="btn-delete-item" onclick="deleteWeightItem(${weights.length - 1 - idx})">حذف 🗑️</button>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
     }
 
     let workoutChartInstance = null;
     function renderWorkoutChart() {
-      const exName = document.getElementById('chart-exercise-select').value;
-      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      const exName = document.getElementById('chart-exercise-select')?.value;
+      if (!exName) return;
       
+      let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       const filtered = logs.filter(l => isSameExercise(l.exName, exName));
 
       const labels = filtered.map(l => l.date);
-      const maxWeights = filtered.map(l => Math.max(...l.sets.map(s => parseFloat(s.weight) || 0)));
+      const maxWeights = filtered.map(l => Math.max(...(l.sets || []).map(s => parseFloat(s.weight) || 0)));
       const avgReps = filtered.map(l => {
-        let validReps = l.sets.map(s => parseInt(s.reps) || 0).filter(r => r > 0);
+        let validReps = (l.sets || []).map(s => parseInt(s.reps) || 0).filter(r => r > 0);
         if (validReps.length === 0) return 0;
         let sum = validReps.reduce((a, b) => a + b, 0);
         return (sum / validReps.length).toFixed(1);
       });
 
-      const ctx = document.getElementById('workoutChart').getContext('2d');
+      const canvasEl = document.getElementById('workoutChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
       if (workoutChartInstance) workoutChartInstance.destroy();
 
       workoutChartInstance = new Chart(ctx, {
@@ -1145,25 +1180,27 @@
       });
 
       const aiBox = document.getElementById('ai-coach-analysis');
-      if (maxWeights.length === 0) {
-        aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
-      } else if (maxWeights.length === 1) {
-        aiBox.innerHTML = `💡 <b>تحليل أول حصة:</b> تم تسجيل أول حصة لتمرين (${exName}) بأعلى وزن <b>${maxWeights[0]} كغ</b> بمتوسط تكرارات <b>${avgReps[0]}</b>. واصل الاستمرار للبدء في المقارنة والتطور! 💪`;
-      } else {
-        const lastW = maxWeights[maxWeights.length - 1];
-        const prevW = maxWeights[maxWeights.length - 2];
-        const lastR = avgReps[avgReps.length - 1];
-        
-        let diffMsg = "";
-        if (lastW > prevW) {
-          diffMsg = `ارتفع أعلى وزن من <b>${prevW} كغ</b> إلى <b>${lastW} كغ</b>! أداء ممتاز في تصاعد 🔥`;
-        } else if (lastW === prevW) {
-          diffMsg = `وزنك مستقر عند <b>${lastW} كغ</b>. حاول إضافة تكرار إضافي الحصة القادمة لكسر الثبات! ⚖️`;
+      if (aiBox) {
+        if (maxWeights.length === 0) {
+          aiBox.innerHTML = '💡 <b>تحليل المدرب الذكي:</b> لا توجد سجلات بعد لهذا التمرين.';
+        } else if (maxWeights.length === 1) {
+          aiBox.innerHTML = `💡 <b>تحليل أول حصة:</b> تم تسجيل أول حصة لتمرين (${exName}) بأعلى وزن <b>${maxWeights[0]} كغ</b> بمتوسط تكرارات <b>${avgReps[0]}</b>. واصل الاستمرار للبدء في المقارنة والتطور! 💪`;
         } else {
-          diffMsg = `انخفض الوزن قليلاً عن الحصة السابقة (كان ${prevW} كغ). احرص على التغذية الجيدة والراحة! ⚠️`;
-        }
+          const lastW = maxWeights[maxWeights.length - 1];
+          const prevW = maxWeights[maxWeights.length - 2];
+          const lastR = avgReps[avgReps.length - 1];
+          
+          let diffMsg = "";
+          if (lastW > prevW) {
+            diffMsg = `ارتفع أعلى وزن من <b>${prevW} كغ</b> إلى <b>${lastW} كغ</b>! أداء ممتاز في تصاعد 🔥`;
+          } else if (lastW === prevW) {
+            diffMsg = `وزنك مستقر عند <b>${lastW} كغ</b>. حاول إضافة تكرار إضافي الحصة القادمة لكسر الثبات! ⚖️`;
+          } else {
+            diffMsg = `انخفض الوزن قليلاً عن الحصة السابقة (كان ${prevW} كغ). احرص على التغذية الجيدة والراحة! ⚠️`;
+          }
 
-        aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج (${maxWeights.length} حصص مسجلة):</b> في آخر حصة لعبت بـ <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. ${diffMsg}`;
+          aiBox.innerHTML = `🔥 <b>تطور المنحنى المزدوج (${maxWeights.length} حصص مسجلة):</b> في آخر حصة لعبت بـ <b>${lastW} كغ</b> بمتوسط تكرارات <b>${lastR}</b>. ${diffMsg}`;
+        }
       }
     }
 
@@ -1173,7 +1210,9 @@
       const labels = weights.map(w => w.date);
       const data = weights.map(w => w.weight);
 
-      const ctx = document.getElementById('weightChart').getContext('2d');
+      const canvasEl = document.getElementById('weightChart');
+      if (!canvasEl) return;
+      const ctx = canvasEl.getContext('2d');
       if (weightChartInstance) weightChartInstance.destroy();
 
       weightChartInstance = new Chart(ctx, {
@@ -1202,7 +1241,7 @@
       });
 
       const aiWeightBox = document.getElementById('ai-weight-analysis');
-      if (data.length >= 2) {
+      if (aiWeightBox && data.length >= 2) {
         const diff = data[data.length - 1] - data[0];
         if (diff > 0) {
           aiWeightBox.innerHTML = `📈 <b>تحليل الوزن الشهري:</b> لقد زاد وزنك بـ <b>+${diff.toFixed(1)} كغ</b> عبر الفترات المسجلة. تقدم ممتاز في مرحلة البناء والضخامة!`;
@@ -1214,13 +1253,17 @@
       }
     }
 
-    // Initialize App
+    // Initialize App safely on load
     window.onload = function() {
-      updateSubCategoryOptions();
-      filterChartExerciseOptions();
-      renderMacrosChart();
-      populateArchiveExerciseDropdown();
-      loadAllArchives();
+      try {
+        updateSubCategoryOptions();
+        filterChartExerciseOptions();
+        renderMacrosChart();
+        populateArchiveExerciseDropdown();
+        loadAllArchives();
+      } catch (e) {
+        console.error("Initialization error:", e);
+      }
     };
   </script>
 </body>
