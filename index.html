@@ -271,7 +271,7 @@
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
-        <label>2. اختر التركيز أو الزاوية:</label>
+        <label>2. اختر استهداف العضلة (الزاوية):</label>
         <select id="sub-category" onchange="updateExerciseOptions()"></select>
 
         <label>3. اختر التمرين:</label>
@@ -471,7 +471,7 @@
   </div>
 
   <script>
-    // Navigation Tabs safely managed with event protection
+    // Navigation Tabs safely managed
     function switchTab(e, tabId) {
       try {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
@@ -489,7 +489,7 @@
           loadAllArchives();
         }
       } catch (err) {
-        console.error("Tab switch error:", err);
+        console.error(err);
       }
     }
 
@@ -500,7 +500,7 @@
         document.getElementById(subId).style.display = 'block';
         if (e && e.target) e.target.classList.add('active');
       } catch (err) {
-        console.error("Archive tab switch error:", err);
+        console.error(err);
       }
     }
 
@@ -605,7 +605,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Safe Structured Exercises Map with Sub-categories & Legacy Compatibility
+    // Simple Structured Exercises (Muscle -> Target Area -> Exercises)
     const structuredExercisesMap = {
       'صدر': {
         'الصدر العلوي (Incline)': [
@@ -613,85 +613,74 @@
           'Incline Barbell Press (بنش علوي بالبار)',
           'Incline Cable Fly (فلاي كابل علوي)'
         ],
-        'الصدر المستوي / الوسط (Flat)': [
+        'الصدر الأوسط / المستوي (Flat)': [
           'Bench Press (بنش بريس)',
           'Flat Dumbbell Press (بنش بريس مستوي بالدمبل)',
           'Chest Press Machine (جهاز ضغط الصدر)'
         ],
-        'الصدر السفلي والغاطس (Lower / Dips)': [
+        'الصدر السفلي / المتوازي (Lower / Dips)': [
           'Dips (متوازي)',
-          'Decline Bench Press (بنش مقلوب سفلي)',
-          'Cable Crossover Low-to-High (سحب كابل من الأسفل للأعلى)'
+          'Decline Bench Press (بنش مقلوب سفلي)'
         ]
       },
       'ظهر': {
-        'العرض واللاتس (Latissimus / Width)': [
+        'اللاتس والعرض (Latissimus)': [
           'Lat Pulldown / Pull Up (سحب عالي / بول أب)',
-          'Single Arm Lat Pulldown (سحب عالي بيد واحدة)',
-          'Lat Pulldown Wide Grip (سحب عالي بالمسطرة واسع)'
+          'Single Arm Lat Pulldown (سحب عالي بيد واحدة)'
         ],
-        'وسط الظهر والسمكة (Mid-Back / Rows)': [
+        'وسط الظهر والسمكة (Mid-Back)': [
           'Barbell Row (تجديف بار طويل)',
           'Dumbbell Row (منشار)',
           'Seated Cable Row (سحب أرضي كابل للوسط)'
         ],
-        'تمارين التيبار المبتكرة (T-Bar)': [
-          'Custom Bench T-Bar Row (تجديف تيبار بالجلوس على الكرسي والبار الطويل)',
-          'Chest-Supported T-Bar Row (تيبار مسند الصدر)',
-          'Landmine Row (تجديف لاندماين بالبار)'
-        ],
         'أسفل الظهر (Lower Back)': [
           'Hyperextensions (هايبر إكستنشن لأسفل الظهر)',
-          'Deadlift (ديدليفت لأسفل الظهر والجسم)'
+          'Deadlift (ديدليفت)'
         ]
       },
       'أرجل': {
-        'الأرجل الأمامية والسكوات (Quads)': [
+        'الفخذ الأمامي (Quads)': [
           'Squat (سكوات)',
           'Leg Press (ليج بريس للأرجل)',
           'Leg Extension / Chair (تمرين الرجل فوق الكرسي)'
         ],
-        'الأرجل الخلفية والكلوتس (Hamstrings & Glutes)': [
-          'Hamstring Curl (فخذ خلفي بالكابل)',
-          'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)',
-          'Romanian Deadlift (ديدليفت روماني للأرجل الخلفية)'
+        'الفخذ الخلفي (Hamstrings)': [
+          'Hamstring Curl (فخذ خلفي بالكابل أو الجهاز)',
+          'Romanian Deadlift (ديدليفت روماني للبار الطويل أو الدمبل)'
+        ],
+        'الكلوتس (Glutes)': [
+          'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)'
         ],
         'السمانة (Calves)': [
-          'Calf Raises (السمانة)',
-          'Seated Calf Raises (سمانة جالس)'
+          'Calf Raises (السمانة)'
         ]
       },
       'أكتاف': {
-        'الأكتاف الأمامية والجانبية (Front & Side Delts)': [
+        'الأكتاف الأمامية والجانبية (Front & Side)': [
           'Overhead Press (ضغط أكتاف)',
-          'Lateral Raise (رفرفة جانبي)',
-          'Dumbbell Shoulder Press (ضغط أكتاف بالدمبل)'
+          'Lateral Raise (رفرفة جانبي)'
         ],
         'الأكتاف الخلفية (Rear Delts)': [
-          'Rear Delt Fly (خلفي)',
-          'Face Pull (سحب الوجه بالكابل)'
+          'Rear Delt Fly (خلفي)'
         ]
       },
       'بايسبس': {
-        'الرأس الطويل والكف للأمام (Long Head / Standard)': [
+        'البايسبس العادي والأمام': [
           'Biceps Curl (بايسبس الكف نحو الأمام)',
-          'Barbell Biceps Curl (بايسبس بالبار الواسع أو الضيق)'
+          'Barbell Biceps Curl (بايسبس بالبار)'
         ],
-        'الرأس الجانبي والهمر (Hammer)': [
-          'Hammer Curl (هامر كيرل - اليد في الأمام)',
-          'Cable Rope Hammer Curl (هامر بالحبل الكابل)'
+        'الهمر (Hammer)': [
+          'Hammer Curl (هامر كيرل - اليد في الأمام)'
         ],
-        'التمارين المبتكرة وكرسي الجيم (Bench / Isolation)': [
-          'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)',
-          'Bench Preacher Curl (بايسبس مسند على الكرسي/الأسطوانة)'
+        'عزل وكرسي الجيم': [
+          'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
         ]
       },
       'ترايسبس': [
-        'الرأس الجانبي والعلوي بالكابل (Pushdown)': [
-          'Triceps Pushdown (ترايسبس كابل)',
-          'Triceps Pushdown with Bar/Rope (ترايسبس كابل بالبار أو الحبل)'
+        'الترايسبس بالكابل (Pushdown)': [
+          'Triceps Pushdown (ترايسبس كابل)'
         ],
-        'التمارين المركبة وفوق الرأس (Overhead / Dips)': [
+        'فوق الرأس والديبس (Overhead / Dips)': [
           'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
           'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
         ]
@@ -703,7 +692,7 @@
         ]
       ],
       'سواعد': [
-        'تمارين السواعد والقبضة (Forearms & Grip)': [
+        'السواعد والقبضة (Forearms & Grip)': [
           'Forearm Cable Pull (سحب الساعد من الأعلى)',
           'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
           'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
@@ -727,7 +716,7 @@
         }
         updateExerciseOptions();
       } catch (e) {
-        console.error("SubCategory error:", e);
+        console.error(e);
       }
     }
 
@@ -756,7 +745,7 @@
           startRestTimer(90);
         }
       } catch (e) {
-        console.error("ExerciseOptions error:", e);
+        console.error(e);
       }
     }
 
@@ -789,7 +778,7 @@
           }
         }
       } catch (e) {
-        console.error("LoadPreviousSetData error:", e);
+        console.error(e);
       }
     }
 
@@ -827,7 +816,7 @@
         });
         renderWorkoutChart();
       } catch (e) {
-        console.error("FilterChart error:", e);
+        console.error(e);
       }
     }
 
@@ -858,7 +847,7 @@
         populateArchiveExerciseDropdown();
         loadAllArchives();
       } catch (e) {
-        console.error("SaveWorkout error:", e);
+        console.error(e);
       }
     }
 
@@ -890,7 +879,7 @@
         loadAllArchives();
         renderWorkoutChart();
       } catch (e) {
-        console.error("EditWorkout error:", e);
+        console.error(e);
       }
     }
 
@@ -1044,7 +1033,7 @@
 
         if (currentSelected) select.value = currentSelected;
       } catch (e) {
-        console.error("Archive Dropdown error:", e);
+        console.error(e);
       }
     }
 
@@ -1125,7 +1114,7 @@
           }
         }
       } catch (e) {
-        console.error("LoadAllArchives error:", e);
+        console.error(e);
       }
     }
 
@@ -1240,7 +1229,7 @@
           }
         }
       } catch (e) {
-        console.error("RenderWorkoutChart error:", e);
+        console.error(e);
       }
     }
 
@@ -1293,18 +1282,18 @@
           }
         }
       } catch (e) {
-        console.error("RenderWeightChart error:", e);
+        console.error(e);
       }
     }
 
-    // Safe Safe Initializer
+    // Initialize App safely on load
     window.onload = function() {
       try {
         updateSubCategoryOptions();
         filterChartExerciseOptions();
         renderMacrosChart();
       } catch (e) {
-        console.error("Initialization error:", e);
+        console.error(e);
       }
     };
   </script>
