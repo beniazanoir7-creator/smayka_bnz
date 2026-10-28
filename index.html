@@ -259,7 +259,7 @@
       <div class="card">
         <h3>تسجيل حصة التدريب</h3>
         
-        <label>الفئة / العضلة:</label>
+        <label>1. اختر العضلة:</label>
         <select id="muscle-group" onchange="updateSubCategoryOptions()">
           <option value="صدر">الصدر (Chest)</option>
           <option value="ظهر">الظهر (Back)</option>
@@ -271,10 +271,10 @@
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
-        <label>زاوية الاستهداف (Sub-Category):</label>
+        <label>2. اختر زاوية الاستهداف (Sub-Category):</label>
         <select id="sub-category" onchange="updateExerciseOptions()"></select>
 
-        <label>اسم التمرين:</label>
+        <label>3. اختر التمرين من القائمة الجاهزة:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
         <!-- Built-in Smart Rest Timer Widget -->
@@ -595,10 +595,10 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Advanced Structured Exercises by Muscle -> Sub-Category (Angles) -> Exercises
+    // Advanced Structured Exercises by Muscle -> Sub-Category (Angles) -> Exercises (ALL DROPDOWNS, NO TYPING!)
     const structuredExercisesMap = {
       'صدر': {
-        'الصدر العوي / العلوي (Incline)': [
+        'الصدر العلوي (Incline)': [
           'Incline Barbell Press (بنش علوي بالبار)',
           'Incline Dumbbell Press (بنش علوي بالدمبل)',
           'Incline Cable Fly (فلاي كابل علوي)'
@@ -608,19 +608,19 @@
           'Flat Dumbbell Press (بنش بريس مستوي بالدمبل)',
           'Chest Press Machine (جهاز ضغط الصدر)'
         ],
-        'الصدر السفلي / الغاطس (Lower/Dips)': [
+        'الصدر السفلي والغاطس (Lower/Dips)': [
           'Decline Bench Press (بنش مقلوب سفلي)',
           'Dips (متوازي للصدر)',
           'Cable Crossover Low-to-High (سحب كابل من الأسفل للأعلى)'
         ]
       },
       'ظهر': {
-        'السحب العالي والبول أب (Vertical Pull / Width)': [
+        'السحب العالي والعرض (Vertical Pull / Width)': [
           'Lat Pulldown Wide Grip (سحب عالي بالمسطرة واسع للاستهداف العرض)',
           'Pull-Up / Chin-Up (عقلة سحب الجسم للأعلى)',
           'Single Arm Lat Pulldown (سحب عالي بيد واحدة للعرض)'
         ],
-        'وسط الظهر والسمكة (Mid-Back / Rows)': [
+        'وسط الظهر والتجديف (Mid-Back / Rows)': [
           'Barbell Row (تجديف بار طويل تقليدي)',
           'Seated Cable Row (سحب أرضي كابل للوسط)',
           'Dumbbell Row / المنشار (تجديف بالدمبل الفردي)'
@@ -681,7 +681,7 @@
           'Overhead Barbell/Dumbbell Extension (بار أو دبل فوق الرأس خلف العنق)',
           'Close Grip Bench Press / Dips (بنش ضيق / ديبس للترايسبس)'
         ]
-      },
+      ],
       'ترابيس': [
         'الترابيس العلوية (Upper Traps - بين العنق والظهر)': [
           'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
@@ -815,7 +815,7 @@
       localStorage.setItem('smayka_logs', JSON.stringify(logs));
       localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
 
-      alert('تم حفظ التمرين وزاويته بنجاح في الأرشيف والمبيان! 💪');
+      alert('تم حفظ التمرين بنجاح في الأرشيف والمبيان! 💪');
       populateArchiveExerciseDropdown();
       loadAllArchives();
     }
