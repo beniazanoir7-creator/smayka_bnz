@@ -258,9 +258,8 @@
     <div id="exercises" class="tab-content active">
       <div class="card">
         <h3>تسجيل حصة التدريب</h3>
-        
-        <label>1. اختر العضلة:</label>
-        <select id="muscle-group" onchange="updateSubCategoryOptions()">
+        <label>الفئة / العضلة:</label>
+        <select id="muscle-group" onchange="updateExerciseOptions()">
           <option value="صدر">الصدر (Chest)</option>
           <option value="ظهر">الظهر (Back)</option>
           <option value="أرجل">الأرجل (Legs)</option>
@@ -271,10 +270,7 @@
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
-        <label>2. اختر زاوية الاستهداف (Sub-Category):</label>
-        <select id="sub-category" onchange="updateExerciseOptions()"></select>
-
-        <label>3. اختر التمرين من القائمة الجاهزة:</label>
+        <label>اسم التمرين:</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
         <!-- Built-in Smart Rest Timer Widget -->
@@ -396,8 +392,8 @@
           <option value="ظهر">الظهر</option>
           <option value="أرجل">الأرجل</option>
           <option value="أكتاف">الأكتاف</option>
-          <option value="بايسبس">بايسبس</option>
-          <option value="ترايسبس">ترايسبس</option>
+          <option value="بايسبس">البايسبس</option>
+          <option value="ترايسبس">الترايسبس</option>
           <option value="ترابيس">الترابيس</option>
           <option value="سواعد">السواعد</option>
         </select>
@@ -471,37 +467,29 @@
   </div>
 
   <script>
-    // Navigation Tabs safely managed
+    // Navigation Tabs
     function switchTab(tabId) {
-      try {
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.target.classList.add('active');
-        
-        if (tabId === 'analytics') {
-          renderWorkoutChart();
-          renderWeightChart();
-        } else if (tabId === 'macros') {
-          renderMacrosChart();
-        } else if (tabId === 'archive') {
-          populateArchiveExerciseDropdown();
-          loadAllArchives();
-        }
-      } catch (e) {
-        console.error(e);
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+      event.target.classList.add('active');
+      
+      if (tabId === 'analytics') {
+        renderWorkoutChart();
+        renderWeightChart();
+      } else if (tabId === 'macros') {
+        renderMacrosChart();
+      } else if (tabId === 'archive') {
+        populateArchiveExerciseDropdown();
+        loadAllArchives();
       }
     }
 
     function switchArchiveTab(subId) {
-      try {
-        document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
-        document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById(subId).style.display = 'block';
-        event.target.classList.add('active');
-      } catch (e) {
-        console.error(e);
-      }
+      document.querySelectorAll('.arc-content').forEach(el => el.style.display = 'none');
+      document.querySelectorAll('.sub-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById(subId).style.display = 'block';
+      event.target.classList.add('active');
     }
 
     // Smart Rest Timer Engine
@@ -605,143 +593,70 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Advanced Structured Exercises by Muscle -> Sub-Category (Angles) -> Exercises (ALL DROPDOWNS)
-    const structuredExercisesMap = {
-      'صدر': {
-        'الصدر العلوي (Incline)': [
-          'Incline Barbell Press (بنش علوي بالبار)',
-          'Incline Dumbbell Press (بنش علوي بالدمبل)',
-          'Incline Cable Fly (فلاي كابل علوي)'
-        ],
-        'الصدر المستوي (Flat)': [
-          'Flat Bench Press (بنش بريس مستوي بالبار)',
-          'Flat Dumbbell Press (بنش بريس مستوي بالدمبل)',
-          'Chest Press Machine (جهاز ضغط الصدر)'
-        ],
-        'الصدر السفلي والغاطس (Lower/Dips)': [
-          'Decline Bench Press (بنش مقلوب سفلي)',
-          'Dips (متوازي للصدر)',
-          'Cable Crossover Low-to-High (سحب كابل من الأسفل للأعلى)'
-        ]
-      },
-      'ظهر': {
-        'السحب العالي والعرض (Vertical Pull / Width)': [
-          'Lat Pulldown Wide Grip (سحب عالي بالمسطرة واسع للاستهداف العرض)',
-          'Pull-Up / Chin-Up (عقلة سحب الجسم للأعلى)',
-          'Single Arm Lat Pulldown (سحب عالي بيد واحدة للعرض)'
-        ],
-        'وسط الظهر والتجديف (Mid-Back / Rows)': [
-          'Barbell Row (تجديف بار طويل تقليدي)',
-          'Seated Cable Row (سحب أرضي كابل للوسط)',
-          'Dumbbell Row / المنشار (تجديف بالدمبل الفردي)'
-        ],
-        'تمارين التيبار المبتكرة (T-Bar & Custom Machine)': [
-          'Custom Bench T-Bar Row (تجديف تيبار بالجلوس على الكرسي والبار الطويل)',
-          'Chest-Supported T-Bar Row (تيبار مسند الصدر)',
-          'Landmine Row (تجديف لاندماين بالبار)'
-        ]
-      },
-      'أرجل': {
-        'الأرجل الأمامية والسكوات (Quads)': [
-          'Barbell Squat (سكوات بالبار الحر)',
-          'Leg Press (ليج بريس للأرجل)',
-          'Leg Extension / Chair (تمرين الرجل فوق الكرسي / الامتداد)'
-        ],
-        'الأرجل الخلفية والكلوتس (Hamstrings & Glutes)': [
-          'Romanian Deadlift (ديدليفت روماني للأرجل الخلفية)',
-          'Hamstring Curl (فخذ خلفي بالكابل أو الجهاز)',
-          'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)'
-        ],
-        'السمانة (Calves)': [
-          'Standing Calf Raises (سمانة واقف بالوزن)',
-          'Seated Calf Raises (سمانة جالس)'
-        ]
-      },
-      'أكتاف': {
-        'الأكتاف الأمامية والجانبية (Front & Side Delts)': [
-          'Overhead Barbell Press (ضغط أكتاف بالبار واقف/جالس)',
-          'Lateral Raise (رفرفة جانبي بالدمبل أو الكابل)',
-          'Dumbbell Shoulder Press (ضغط أكتاف بالدمبل)'
-        ],
-        'الأكتاف الخلفية (Rear Delts)': [
-          'Rear Delt Fly (رفرفة خلفي للكتف)',
-          'Face Pull (سحب الوجه بالكابل للاستهداف الخلفي)'
-        ]
-      },
-      'بايسبس': {
-        'الرأس الطويل والكف للأمام (Long Head / Standard)': [
-          'Barbell Biceps Curl (بايسبس بالبار الواسع أو الضيق)',
-          'Incline Dumbbell Curl (بايسبس على كرسي مائل)'
-        ],
-        'الرأس الجانبي والهمر (Brachialis / Hammer)': [
-          'Hammer Curl (هامر كيرل - الكف في الأمام)',
-          'Cable Rope Hammer Curl (هامر بالحبل الكابل)'
-        ],
-        'التمارين المبتكرة وكرسي الجيم (Bench & Isolation)': [
-          'Bench Preacher Curl (بايسبس مسند على الكرسي/الأسطوانة)',
-          'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
-        ]
-      },
+    // Customized Exercises Map (Original Stable Version)
+    const exercisesMap = {
+      'صدر': [
+        'Bench Press (بنش بريس)', 
+        'Incline Dumbbell Press (إنكلاين دبل بريس)', 
+        'Dips (متوازي)'
+      ],
+      'ظهر': [
+        'Lat Pulldown / Pull Up (سحب عالي / بول أب)', 
+        'Single Arm Lat Pulldown (سحب عالي بيد واحدة)', 
+        'Barbell Row (تجديف بار طويل)', 
+        'Dumbbell Row (منشار)'
+      ],
+      'أرجل': [
+        'Squat (سكوات)', 
+        'Leg Extension / Chair (تمرين الرجل فوق الكرسي)', 
+        'Hamstring Curl (فخذ خلفي بالكابل)', 
+        'Glutes Kickback / Thrust (تمرين الكلوتس والأرجل الخلفية)',
+        'Calf Raises (السمانة)'
+      ],
+      'أكتاف': [
+        'Overhead Press (ضغط أكتاف)', 
+        'Lateral Raise (رفرفة جانبي)', 
+        'Rear Delt Fly (خلفي)'
+      ],
+      'بايسبس': [
+        'Hammer Curl (هامر كيرل - اليد في الأمام)', 
+        'Biceps Curl (بايسبس الكف نحو الأمام)', 
+        'Behind Back / Underhand Curl (بايسبس اليد خلف الظهر)'
+      ],
       'ترايسبس': [
-        'الرأس الجانبي والعلوي بالكابل (Pushdown)': [
-          'Triceps Pushdown with Bar/Rope (ترايسبس كابل بالبار أو الحبل)',
-          'Single Arm Reverse Pushdown (كابل عكسي بيد واحدة)'
-        ],
-        'التمارين المركبة وفوق الرأس (Overhead / Dips)': [
-          'Overhead Barbell/Dumbbell Extension (بار أو دبل فوق الرأس خلف العنق)',
-          'Close Grip Bench Press / Dips (بنش ضيق / ديبس للترايسبس)'
-        ]
+        'Triceps Pushdown (ترايسبس كابل)', 
+        'Overhead Barbell/Dumbbell Extension (بار فوق الرأس)',
+        'Triceps Dips / Close Grip (ترايسبس إضافي / ضيق)'
       ],
       'ترابيس': [
-        'الترابيس العلوية (Upper Traps - بين العنق والظهر)': [
-          'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
-          'Dumbbell Shrugs (ترابيس بالدمبل)'
-        ]
+        'Barbell Shrugs (ترابيس بالبار - بين العنق والظهر)',
+        'Dumbbell Shrugs (ترابيس بالدمبل)'
       ],
       'سواعد': [
-        'تمارين السواعد والقبضة (Forearms & Grip)': [
-          'Forearm Cable Pull (سحب الساعد من الأعلى)',
-          'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
-          'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
-        ]
+        'Forearm Cable Pull (سحب الساعد من الأعلى)',
+        'Barbell Wrist Curl (تمرين بار لاستهداف خلف الساعد)',
+        'Dead Hang / Bar Hold (التمسك بالبار لأطول وقت ممكن)'
       ]
     };
 
-    function updateSubCategoryOptions() {
-      const muscle = document.getElementById('muscle-group').value;
-      const subSelect = document.getElementById('sub-category');
-      if (!subSelect) return;
-      subSelect.innerHTML = '';
-
-      const subCategories = structuredExercisesMap[muscle] || {};
-      for (let subName in subCategories) {
-        const opt = document.createElement('option');
-        opt.value = subName;
-        opt.innerText = subName;
-        subSelect.appendChild(opt);
-      }
-      updateExerciseOptions();
-    }
-
     function updateExerciseOptions() {
-      const muscle = document.getElementById('muscle-group').value;
-      const subName = document.getElementById('sub-category').value;
-      const exerciseSelect = document.getElementById('exercise-name');
-      if (!exerciseSelect) return;
-      exerciseSelect.innerHTML = '';
-
-      const exercises = structuredExercisesMap[muscle]?.[subName] || [];
-      exercises.forEach(ex => {
+      const group = document.getElementById('muscle-group').value;
+      const select = document.getElementById('exercise-name');
+      if (!select) return;
+      select.innerHTML = '';
+      
+      const list = exercisesMap[group] || [];
+      list.forEach(ex => {
         const opt = document.createElement('option');
         opt.value = ex;
         opt.innerText = ex;
-        exerciseSelect.appendChild(opt);
+        select.appendChild(opt);
       });
       loadPreviousSetData();
-
-      if (muscle === 'أرجل' || muscle === 'ظهر' || muscle === 'صدر') {
+      
+      if (group === 'أرجل' || group === 'ظهر' || group === 'صدر') {
         startRestTimer(180);
-      } else if (muscle === 'أكتاف') {
+      } else if (group === 'أكتاف') {
         startRestTimer(120);
       } else {
         startRestTimer(90);
@@ -785,19 +700,11 @@
 
       let list = [];
       if (filterGroup === 'جميع العضلات') {
-        for (let m in structuredExercisesMap) {
-          for (let sub in structuredExercisesMap[m]) {
-            list.push(...structuredExercisesMap[m][sub]);
-          }
-        }
+        Object.values(exercisesMap).forEach(arr => list.push(...arr));
       } else {
-        const subs = structuredExercisesMap[filterGroup] || {};
-        for (let sub in subs) {
-          list.push(...subs[sub]);
-        }
+        list = exercisesMap[filterGroup] || [];
       }
 
-      // Also include legacy exercises from logs so they don't disappear in charts
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       logs.forEach(l => {
         if (l.exName && !list.includes(l.exName)) list.push(l.exName);
@@ -816,7 +723,6 @@
     function saveWorkout() {
       const exName = document.getElementById('exercise-name').value;
       const muscle = document.getElementById('muscle-group').value;
-      const sub = document.getElementById('sub-category').value;
       const date = new Date().toLocaleDateString('ar-MA');
 
       let sets = [];
@@ -826,7 +732,7 @@
         sets.push({ weight: parseFloat(w), reps: parseInt(r) });
       }
 
-      const entry = { id: Date.now(), date, muscle, sub, exName, sets };
+      const entry = { id: Date.now(), date, muscle, exName, sets };
       
       let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
       logs.push(entry);
@@ -1036,8 +942,7 @@
             return `
               <div class="history-item">
                 <div>
-                  <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span></b>
-                  <div style="font-size:0.75rem; color:#2196F3;">الزاوية: ${l.sub || 'عام'} (${l.muscle || ''})</div>
+                  <b>🗓️ ${l.date} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span> (${l.muscle || ''})</b>
                   <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
                     ج1: ${setsArr[0]?.weight || 0}كغ (${setsArr[0]?.reps || 0}) |
                     ج2: ${setsArr[1]?.weight || 0}كغ (${setsArr[1]?.reps || 0}) |
@@ -1256,7 +1161,7 @@
     // Initialize App safely on load
     window.onload = function() {
       try {
-        updateSubCategoryOptions();
+        updateExerciseOptions();
         filterChartExerciseOptions();
         renderMacrosChart();
         populateArchiveExerciseDropdown();
