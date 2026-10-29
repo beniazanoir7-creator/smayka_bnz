@@ -10,249 +10,341 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
-      --bg-color: #121212;
-      --card-bg: #1e1e1e;
-      --card-alt: #252525;
-      --accent-color: #e53935;
-      --accent-hover: #d32f2f;
-      --text-color: #e0e0e0;
-      --border-color: #333;
+      --bg-deep: #08090B;
+      --bg-charcoal: #141619;
+      --card-bg: #141619;
+      --card-alt: #1c1f24;
+      --accent-red: #FF3038;
+      --accent-hover: #e02830;
+      --text-main: #FFFFFF;
+      --text-muted: #9EABBE;
+      --border-color: #232830;
       --warning-color: #ff9800;
       --info-color: #2196F3;
+      --glow-red: rgba(255, 48, 56, 0.25);
     }
+
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-color);
+      background-color: var(--bg-deep);
+      color: var(--text-main);
       margin: 0;
       padding: 15px;
       direction: rtl;
     }
+
     .container {
       max-width: 600px;
       margin: 0 auto;
-      padding-bottom: 30px;
+      padding-bottom: 40px;
     }
+
     .header-title {
-      font-size: 1.8rem;
-      font-weight: bold;
+      font-size: 1.9rem;
+      font-weight: 800;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 10px;
-      margin-bottom: 20px;
-      color: var(--accent-color);
-      text-shadow: 0 0 10px rgba(229, 57, 53, 0.3);
+      gap: 12px;
+      margin-bottom: 24px;
+      color: var(--accent-red);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 0 15px var(--glow-red);
     }
+
     /* Tabs */
     .nav-tabs {
       display: flex;
       justify-content: space-around;
       background: var(--card-bg);
-      padding: 8px;
-      border-radius: 12px;
-      margin-bottom: 20px;
+      padding: 6px;
+      border-radius: 14px;
+      margin-bottom: 22px;
       border: 1px solid var(--border-color);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
     }
+
     .tab-btn {
       background: none;
       border: none;
-      color: #888;
-      font-size: 0.95rem;
-      font-weight: bold;
-      padding: 8px 12px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 10px 14px;
       cursor: pointer;
-      border-radius: 8px;
-      transition: 0.3s;
+      border-radius: 10px;
+      transition: all 0.3s ease;
     }
+
     .tab-btn.active {
-      background: var(--accent-color);
+      background: var(--accent-red);
       color: #fff;
-      box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+      box-shadow: 0 0 15px var(--glow-red);
     }
+
     .tab-content {
       display: none;
+      animation: fadeIn 0.3s ease-in-out;
     }
+
     .tab-content.active {
       display: block;
     }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     /* Archive Sub-Tabs */
     .archive-sub-tabs {
       display: flex;
-      gap: 5px;
-      margin-bottom: 15px;
+      gap: 8px;
+      margin-bottom: 18px;
     }
+
     .sub-btn {
       flex: 1;
-      padding: 8px;
+      padding: 10px;
       background: var(--card-alt);
       border: 1px solid var(--border-color);
-      color: #aaa;
-      border-radius: 6px;
+      color: var(--text-muted);
+      border-radius: 8px;
       cursor: pointer;
       font-size: 0.85rem;
-      font-weight: bold;
+      font-weight: 700;
+      transition: 0.2s;
     }
+
     .sub-btn.active {
-      background: var(--accent-color);
+      background: var(--accent-red);
       color: #fff;
-      border-color: var(--accent-color);
+      border-color: var(--accent-red);
+      box-shadow: 0 0 10px var(--glow-red);
     }
+
     /* Cards */
     .card {
       background: var(--card-bg);
-      padding: 15px;
-      border-radius: 12px;
-      margin-bottom: 15px;
+      padding: 20px;
+      border-radius: 16px;
+      margin-bottom: 18px;
       border: 1px solid var(--border-color);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      position: relative;
     }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--accent-red);
+      border-top-right-radius: 16px;
+      border-bottom-right-radius: 16px;
+      opacity: 0.8;
+    }
+
     h3 {
       margin-top: 0;
-      color: var(--accent-color);
+      color: var(--accent-red);
       text-align: center;
+      font-size: 1.25rem;
+      letter-spacing: 0.5px;
     }
+
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-size: 0.9rem;
-      color: #bbb;
+      color: var(--text-muted);
+      font-weight: 600;
     }
+
     input, select, button {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 14px;
+      border-radius: 10px;
       border: 1px solid var(--border-color);
-      background: #2a2a2a;
-      color: #fff;
+      background: var(--card-alt);
+      color: var(--text-main);
       box-sizing: border-box;
       font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
+
     input:focus, select:focus {
-      border-color: var(--accent-color);
+      border-color: var(--accent-red);
       outline: none;
+      box-shadow: 0 0 10px var(--glow-red);
     }
+
     button.btn-primary {
-      background: var(--accent-color);
+      background: var(--accent-red);
       color: #fff;
-      font-weight: bold;
+      font-weight: 700;
       border: none;
       cursor: pointer;
       margin-top: 5px;
-      transition: 0.2s;
+      box-shadow: 0 4px 15px var(--glow-red);
+      transition: all 0.2s;
     }
+
     button.btn-primary:hover {
       background: var(--accent-hover);
+      box-shadow: 0 6px 20px rgba(255, 48, 56, 0.4);
+      transform: translateY(-1px);
     }
+
     .sets-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
+
     .set-box {
       background: var(--card-alt);
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #333;
+      padding: 12px;
+      border-radius: 10px;
+      border: 1px solid var(--border-color);
     }
+
     .set-box span {
       font-size: 0.85rem;
-      color: var(--accent-color);
-      font-weight: bold;
+      color: var(--accent-red);
+      font-weight: 700;
+      display: block;
+      margin-bottom: 6px;
     }
+
+    .set-box input {
+      margin-bottom: 8px;
+    }
+
+    .set-box input:last-child {
+      margin-bottom: 0;
+    }
+
     /* Rest Timer Widget Box */
     .timer-card {
       background: var(--card-alt);
       border: 2px dashed var(--warning-color);
-      padding: 12px;
-      border-radius: 10px;
-      margin-bottom: 15px;
+      padding: 14px;
+      border-radius: 12px;
+      margin-bottom: 18px;
       text-align: center;
     }
+
     .timer-display {
-      font-size: 1.8rem;
-      font-weight: bold;
+      font-size: 2rem;
+      font-weight: 800;
       color: var(--warning-color);
-      margin: 5px 0;
+      margin: 6px 0;
+      letter-spacing: 1px;
     }
+
     .timer-btns {
       display: flex;
-      gap: 5px;
+      gap: 6px;
     }
+
     .timer-btns button {
       margin-bottom: 0;
       font-size: 0.8rem;
-      padding: 6px;
+      padding: 8px;
+      font-weight: 700;
     }
+
     /* AI Boxes */
     .ai-box {
       background: var(--card-alt);
       border-right: 4px solid var(--warning-color);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 16px;
       font-size: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.6;
+      color: var(--text-main);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      border-left: 1px solid var(--border-color);
     }
+
     .ai-food-box {
       background: var(--card-alt);
       border-right: 4px solid var(--info-color);
-      padding: 12px;
-      border-radius: 8px;
-      margin-top: 15px;
+      padding: 14px;
+      border-radius: 10px;
+      margin-top: 16px;
       font-size: 0.9rem;
-      line-height: 1.5;
+      line-height: 1.6;
+      color: var(--text-main);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      border-left: 1px solid var(--border-color);
     }
+
     canvas {
       max-width: 100%;
-      background: #ffffff;
-      border-radius: 8px;
-      padding: 10px;
+      background: #0d0f12;
+      border-radius: 10px;
+      padding: 12px;
       box-sizing: border-box;
+      border: 1px solid var(--border-color);
     }
+
     .history-item {
       border-bottom: 1px solid var(--border-color);
-      padding: 10px 0;
+      padding: 12px 0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+
     .history-item:last-child {
       border-bottom: none;
     }
+
     .action-btns {
       display: flex;
-      gap: 4px;
+      gap: 6px;
     }
+
     .btn-delete-item {
       background: #d32f2f;
       color: #fff;
       border: none;
-      padding: 5px 8px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-size: 0.75rem;
       cursor: pointer;
       width: auto;
       margin: 0;
+      font-weight: 700;
     }
+
     .btn-edit-item {
       background: #ff9800;
       color: #fff;
       border: none;
-      padding: 5px 8px;
-      border-radius: 6px;
+      padding: 6px 10px;
+      border-radius: 8px;
       font-size: 0.75rem;
       cursor: pointer;
       width: auto;
       margin: 0;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <div class="header-title"> 🔥 SCORPION POWER</div>
+    <div class="header-title">🦂 SCORPION POWER</div>
 
     <!-- Main Navigation -->
     <div class="nav-tabs">
@@ -284,17 +376,17 @@
 
         <!-- Built-in Smart Rest Timer Widget -->
         <div class="timer-card">
-          <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة (3 دقائق / دقيقتين / 90 ثانية):</span>
+          <span style="font-size: 0.85rem; color: var(--text-muted);">⏱️ مؤقت الراحة (3 دقائق / دقيقتين / 90 ثانية):</span>
           <div class="timer-display" id="timer-clock">03:00</div>
           <div class="timer-btns">
-            <button class="btn-primary" onclick="startRestTimer(180)" style="background:#e53935; margin-top:0;">ثقيلة (3 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(180)" style="background:var(--accent-red); margin-top:0;">ثقيلة (3 د)</button>
             <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3; margin-top:0;">متوسطة (2 د)</button>
             <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50; margin-top:0;">عزل (90 ث)</button>
-            <button onclick="stopRestTimer()" style="background:#d32f2f; color:#fff; border:none; border-radius:6px; cursor:pointer;">إيقاف ⏹️</button>
+            <button onclick="stopRestTimer()" style="background:#d32f2f; color:#fff; border:none; border-radius:8px; cursor:pointer; font-weight:700;">إيقاف ⏹️</button>
           </div>
         </div>
 
-        <label>تسجيل 4 الجلسات (Sets): <span style="font-size:0.75rem; color:var(--accent-color);">(تعبئة تلقائية لأوزان الحصة الفائته 💡)</span></label>
+        <label>تسجيل 4 الجلسات (Sets): <span style="font-size:0.75rem; color:var(--accent-red);">(تعبئة تلقائية لأوزان الحصة الفائتة 💡)</span></label>
         <div class="sets-grid">
           <div class="set-box">
             <span>الجلسة 1 (Set 1)</span>
@@ -375,7 +467,7 @@
         <p>البروتين: <b id="total-p" style="color:#4CAF50;">0</b> غرام</p>
         <p>الكاربوهيدرات: <b id="total-c" style="color:#2196F3;">0</b> غرام</p>
         <p>الدهون: <b id="total-f" style="color:#FF9800;">0</b> غرام</p>
-        <p>السعرات الحرارية: <b id="total-cal" style="color:#e53935;">0</b> Kcal</p>
+        <p>السعرات الحرارية: <b id="total-cal" style="color:var(--accent-red);">0</b> Kcal</p>
         
         <label style="margin-top:15px;">مبيان توزيع الماكروز للوجبة:</label>
         <canvas id="macrosChart" height="180"></canvas>
@@ -410,7 +502,7 @@
         <label>اختر التمرين لرؤية منحنى التطور المباشر:</label>
         <select id="chart-exercise-select" onchange="renderWorkoutChart()"></select>
 
-        <div style="background: #ffffff; padding: 5px; border-radius: 8px;">
+        <div style="background: #0d0f12; padding: 6px; border-radius: 10px; border: 1px solid var(--border-color);">
           <canvas id="workoutChart" height="230"></canvas>
         </div>
 
@@ -425,7 +517,7 @@
         <input type="number" id="body-weight-input" placeholder="أدخل وزنك الحالي (كغ)">
         <button class="btn-primary" onclick="saveBodyWeight()">تسجيل الوزن الشهري 📝</button>
 
-        <div style="background: #ffffff; padding: 5px; border-radius: 8px; margin-top: 10px;">
+        <div style="background: #0d0f12; padding: 6px; border-radius: 10px; margin-top: 10px; border: 1px solid var(--border-color);">
           <canvas id="weightChart" height="180"></canvas>
         </div>
         
@@ -447,8 +539,8 @@
         </div>
 
         <!-- Section 1: Workout Archive -->
-        <div id="workout-arc" class="arc-content card" style="background:#181818; padding:10px;">
-          <h4 style="color:var(--accent-color); margin-top:0;">أرشيف التمارين والتكرارات 🏋️‍♂️</h4>
+        <div id="workout-arc" class="arc-content card" style="background:#0d0f12; padding:12px;">
+          <h4 style="color:var(--accent-red); margin-top:0;">أرشيف التمارين والتكرارات 🏋️‍♂️</h4>
           
           <label style="color:#fff; font-size:0.85rem;">🎯 اختر التمرين لعرض سجله وتواريخه:</label>
           <select id="archive-exercise-select" onchange="loadAllArchives()">
@@ -459,13 +551,13 @@
         </div>
 
         <!-- Section 2: Nutrition Archive -->
-        <div id="nutrition-arc" class="arc-content card" style="display:none; background:#181818; padding:10px;">
+        <div id="nutrition-arc" class="arc-content card" style="display:none; background:#0d0f12; padding:12px;">
           <h4 style="color:#2196F3; margin-top:0;">أرشيف الماكروز والوجبات اليومية 🥗</h4>
           <div id="history-list-nutrition">جاري التحميل...</div>
         </div>
 
         <!-- Section 3: Body Weight Archive -->
-        <div id="weight-arc" class="arc-content card" style="display:none; background:#181818; padding:10px;">
+        <div id="weight-arc" class="arc-content card" style="display:none; background:#0d0f12; padding:12px;">
           <h4 style="color:#FF9800; margin-top:0;">أرشيف سجلات وزن الجسم (الشهري) ⚖️</h4>
           <div id="history-list-weights">جاري التحميل...</div>
         </div>
@@ -987,7 +1079,7 @@
           labels: ['بروتين (غ)', 'كاربوهيدرات (غ)', 'دهون (غ)'],
           datasets: [{
             data: [totalP, totalC, totalF],
-            backgroundColor: ['#e53935', '#2196F3', '#FF9800'],
+            backgroundColor: ['#FF3038', '#2196F3', '#FF9800'],
             borderWidth: 1
           }]
         },
@@ -1048,16 +1140,16 @@
 
         if (workoutContainer) {
           if (!filteredLogs || filteredLogs.length === 0) {
-            workoutContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
+            workoutContainer.innerHTML = '<p style="color:var(--text-muted);">لا توجد سجلات لهذا التمرين في الأرشيف.</p>';
           } else {
             workoutContainer.innerHTML = filteredLogs.slice().reverse().map(l => {
               const setsArr = l.sets || [];
               return `
                 <div class="history-item">
                   <div>
-                    <b>🗓️ ${l.date || 'تاريخ'} | <span style="color:var(--accent-color);">${l.exName || 'تمرين'}</span></b>
+                    <b>🗓️ ${l.date || 'تاريخ'} | <span style="color:var(--accent-red);">${l.exName || 'تمرين'}</span></b>
                     <div style="font-size:0.75rem; color:#2196F3;">العضلة: ${l.muscle || ''}</div>
-                    <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                    <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
                       ج1: ${setsArr[0]?.weight || 0}كغ (${setsArr[0]?.reps || 0}) |
                       ج2: ${setsArr[1]?.weight || 0}كغ (${setsArr[1]?.reps || 0}) |
                       ج3: ${setsArr[2]?.weight || 0}كغ (${setsArr[2]?.reps || 0}) |
@@ -1078,13 +1170,13 @@
         const nutritionContainer = document.getElementById('history-list-nutrition');
         if (nutritionContainer) {
           if (!nutritionLogs || nutritionLogs.length === 0) {
-            nutritionContainer.innerHTML = '<p style="color:#888;">لا توجد وجبات محفوظة بعد.</p>';
+            nutritionContainer.innerHTML = '<p style="color:var(--text-muted);">لا توجد وجبات محفوظة بعد.</p>';
           } else {
             nutritionContainer.innerHTML = nutritionLogs.slice().reverse().map((n, idx) => `
               <div class="history-item">
                 <div>
                   <b>🗓️ ${n.date || ''} - مجموع اليوم</b>
-                  <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
+                  <div style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">
                     بروتين: ${n.p || 0}غ | كارب: ${n.c || 0}غ | دهون: ${n.f || 0}غ | سعرات: ${n.cal || 0} Kcal
                   </div>
                 </div>
@@ -1098,7 +1190,7 @@
         const weightsContainer = document.getElementById('history-list-weights');
         if (weightsContainer) {
           if (!weights || weights.length === 0) {
-            weightsContainer.innerHTML = '<p style="color:#888;">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
+            weightsContainer.innerHTML = '<p style="color:var(--text-muted);">لا توجد سجلات وزن شهرية محفوظة بعد.</p>';
           } else {
             weightsContainer.innerHTML = weights.slice().reverse().map((w, idx) => `
               <div class="history-item">
@@ -1146,11 +1238,11 @@
               {
                 label: 'أعلى وزن (كغ)',
                 data: maxWeights.length ? maxWeights : [0],
-                borderColor: '#e53935',
-                backgroundColor: 'rgba(229, 57, 53, 0.1)',
+                borderColor: '#FF3038',
+                backgroundColor: 'rgba(255, 48, 56, 0.1)',
                 borderWidth: 3,
                 pointRadius: 5,
-                pointBackgroundColor: '#e53935',
+                pointBackgroundColor: '#FF3038',
                 yAxisID: 'y',
                 fill: false,
                 tension: 0.1
@@ -1158,11 +1250,11 @@
               {
                 label: 'متوسط التكرارات',
                 data: avgReps.length ? avgReps : [0],
-                borderColor: '#1e88e5',
-                backgroundColor: 'rgba(30, 136, 229, 0.1)',
+                borderColor: '#2196F3',
+                backgroundColor: 'rgba(33, 150, 243, 0.1)',
                 borderWidth: 3,
                 pointRadius: 5,
-                pointBackgroundColor: '#1e88e5',
+                pointBackgroundColor: '#2196F3',
                 yAxisID: 'y1',
                 fill: false,
                 tension: 0.1
@@ -1174,29 +1266,29 @@
             plugins: { 
               legend: { 
                 display: true,
-                labels: { color: '#000', font: { weight: 'bold' } } 
+                labels: { color: '#ffffff', font: { weight: 'bold' } } 
               } 
             },
             scales: {
               x: { 
-                grid: { color: '#d0d0d0', lineWidth: 1 }, 
-                ticks: { color: '#000', font: { weight: 'bold' } } 
+                grid: { color: '#232830', lineWidth: 1 }, 
+                ticks: { color: '#9EABBE', font: { weight: 'bold' } } 
               },
               y: {
                 type: 'linear',
                 display: true,
                 position: 'left',
-                grid: { color: '#d0d0d0', lineWidth: 1 },
-                ticks: { color: '#e53935', font: { weight: 'bold' } },
-                title: { display: true, text: 'الوزن (كغ)', color: '#e53935', font: { weight: 'bold' } }
+                grid: { color: '#232830', lineWidth: 1 },
+                ticks: { color: '#FF3038', font: { weight: 'bold' } },
+                title: { display: true, text: 'الوزن (كغ)', color: '#FF3038', font: { weight: 'bold' } }
               },
               y1: {
                 type: 'linear',
                 display: true,
                 position: 'right',
                 grid: { drawOnChartArea: false },
-                ticks: { color: '#1e88e5', font: { weight: 'bold' } },
-                title: { display: true, text: 'التكرارات', color: '#1e88e5', font: { weight: 'bold' } }
+                ticks: { color: '#2196F3', font: { weight: 'bold' } },
+                title: { display: true, text: 'التكرارات', color: '#2196F3', font: { weight: 'bold' } }
               }
             }
           }
@@ -1249,20 +1341,20 @@
             datasets: [{
               label: 'وزن الجسم الشهري (كغ)',
               data: data.length ? data : [0],
-              borderColor: '#1e88e5',
-              backgroundColor: 'rgba(30, 136, 229, 0.1)',
+              borderColor: '#2196F3',
+              backgroundColor: 'rgba(33, 150, 243, 0.1)',
               borderWidth: 3,
               pointRadius: 5,
-              pointBackgroundColor: '#1e88e5',
+              pointBackgroundColor: '#2196F3',
               fill: false
             }]
           },
           options: {
             responsive: true,
-            plugins: { legend: { labels: { color: '#000', font: { weight: 'bold' } } } },
+            plugins: { legend: { labels: { color: '#ffffff', font: { weight: 'bold' } } } },
             scales: {
-              x: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } },
-              y: { grid: { color: '#d0d0d0' }, ticks: { color: '#000', font: { weight: 'bold' } } }
+              x: { grid: { color: '#232830' }, ticks: { color: '#9EABBE', font: { weight: 'bold' } } },
+              y: { grid: { color: '#232830' }, ticks: { color: '#9EABBE', font: { weight: 'bold' } } }
             }
           }
         });
