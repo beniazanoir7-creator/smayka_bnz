@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SMAYKA POWER</title>
+  <title>SCORPION POWER</title>
   <link rel="icon" type="image/jpeg" href="258d528157c630e6cc4ebf6598ed3e5.jpg">
   <link rel="apple-touch-icon" href="258d528157c630e6cc4ebf6598ed3e5.jpg">
   <link rel="manifest" href="manifest.json">
@@ -12,11 +12,11 @@
     :root {
       --bg-color: #121212;
       --card-bg: #1e1e1e;
-      --accent-color: #4CAF50;
-      --accent-hover: #45a049;
+      --card-alt: #252525;
+      --accent-color: #e53935;
+      --accent-hover: #d32f2f;
       --text-color: #e0e0e0;
       --border-color: #333;
-      --danger-color: #f44336;
       --warning-color: #ff9800;
       --info-color: #2196F3;
     }
@@ -42,6 +42,7 @@
       gap: 10px;
       margin-bottom: 20px;
       color: var(--accent-color);
+      text-shadow: 0 0 10px rgba(229, 57, 53, 0.3);
     }
     /* Tabs */
     .nav-tabs {
@@ -67,6 +68,7 @@
     .tab-btn.active {
       background: var(--accent-color);
       color: #fff;
+      box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
     }
     .tab-content {
       display: none;
@@ -83,7 +85,7 @@
     .sub-btn {
       flex: 1;
       padding: 8px;
-      background: #252525;
+      background: var(--card-alt);
       border: 1px solid var(--border-color);
       color: #aaa;
       border-radius: 6px;
@@ -103,6 +105,7 @@
       border-radius: 12px;
       margin-bottom: 15px;
       border: 1px solid var(--border-color);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     }
     h3 {
       margin-top: 0;
@@ -126,6 +129,10 @@
       box-sizing: border-box;
       font-size: 0.95rem;
     }
+    input:focus, select:focus {
+      border-color: var(--accent-color);
+      outline: none;
+    }
     button.btn-primary {
       background: var(--accent-color);
       color: #fff;
@@ -133,6 +140,7 @@
       border: none;
       cursor: pointer;
       margin-top: 5px;
+      transition: 0.2s;
     }
     button.btn-primary:hover {
       background: var(--accent-hover);
@@ -143,7 +151,7 @@
       gap: 10px;
     }
     .set-box {
-      background: #252525;
+      background: var(--card-alt);
       padding: 8px;
       border-radius: 8px;
       border: 1px solid #333;
@@ -155,7 +163,7 @@
     }
     /* Rest Timer Widget Box */
     .timer-card {
-      background: #252525;
+      background: var(--card-alt);
       border: 2px dashed var(--warning-color);
       padding: 12px;
       border-radius: 10px;
@@ -179,7 +187,7 @@
     }
     /* AI Boxes */
     .ai-box {
-      background: #252525;
+      background: var(--card-alt);
       border-right: 4px solid var(--warning-color);
       padding: 12px;
       border-radius: 8px;
@@ -188,7 +196,7 @@
       line-height: 1.5;
     }
     .ai-food-box {
-      background: #252525;
+      background: var(--card-alt);
       border-right: 4px solid var(--info-color);
       padding: 12px;
       border-radius: 8px;
@@ -244,7 +252,7 @@
 <body>
 
   <div class="container">
-    <div class="header-title">🦂🔥 SMAYKA POWER</div>
+    <div class="header-title">🦂🔥 SCORPION POWER</div>
 
     <!-- Main Navigation -->
     <div class="nav-tabs">
@@ -257,7 +265,7 @@
     <!-- Tab 1: Exercises -->
     <div id="exercises" class="tab-content active">
       <div class="card">
-        <h3>تسجيل حصة التدريب</h3>
+        <h3>تسجيل حصة التدريب (Workout)</h3>
         
         <label>1. اختر العضلة:</label>
         <select id="muscle-group" onchange="updateExerciseDropdown()">
@@ -271,7 +279,7 @@
           <option value="سواعد">السواعد (Forearms)</option>
         </select>
 
-        <label>2. اختر التمرين (مقسماً حسب الأجزاء والزوايا داخل نفس القائمة):</label>
+        <label>2. اختر التمرين (مقسماً حسب الزوايا والهدف داخل نفس القائمة):</label>
         <select id="exercise-name" onchange="loadPreviousSetData()"></select>
 
         <!-- Built-in Smart Rest Timer Widget -->
@@ -279,32 +287,32 @@
           <span style="font-size: 0.85rem; color: #ccc;">⏱️ مؤقت الراحة (3 دقائق / دقيقتين / 90 ثانية):</span>
           <div class="timer-display" id="timer-clock">03:00</div>
           <div class="timer-btns">
-            <button class="btn-primary" onclick="startRestTimer(180)" style="background:#e53935;">ثقيلة (3 د)</button>
-            <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3;">متوسطة (2 د)</button>
-            <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50;">عزل (90 ث)</button>
+            <button class="btn-primary" onclick="startRestTimer(180)" style="background:#e53935; margin-top:0;">ثقيلة (3 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(120)" style="background:#2196F3; margin-top:0;">متوسطة (2 د)</button>
+            <button class="btn-primary" onclick="startRestTimer(90)" style="background:#4CAF50; margin-top:0;">عزل (90 ث)</button>
             <button onclick="stopRestTimer()" style="background:#d32f2f; color:#fff; border:none; border-radius:6px; cursor:pointer;">إيقاف ⏹️</button>
           </div>
         </div>
 
-        <label>تسجيل 4 الجلسات (المجموعات): <span style="font-size:0.75rem; color:#4CAF50;">(يتم تعبئة أوزان الحصة الفائته تلقائياً 💡)</span></label>
+        <label>تسجيل 4 الجلسات (Sets): <span style="font-size:0.75rem; color:var(--accent-color);">(تعبئة تلقائية لأوزان الحصة الفائته 💡)</span></label>
         <div class="sets-grid">
           <div class="set-box">
-            <span>الجلسة 1</span>
+            <span>الجلسة 1 (Set 1)</span>
             <input type="number" id="s1-w" placeholder="الوزن (كغ)">
             <input type="number" id="s1-r" placeholder="التكرارات">
           </div>
           <div class="set-box">
-            <span>الجلسة 2</span>
+            <span>الجلسة 2 (Set 2)</span>
             <input type="number" id="s2-w" placeholder="الوزن (كغ)">
             <input type="number" id="s2-r" placeholder="التكرارات">
           </div>
           <div class="set-box">
-            <span>الجلسة 3</span>
+            <span>الجلسة 3 (Set 3)</span>
             <input type="number" id="s3-w" placeholder="الوزن (كغ)">
             <input type="number" id="s3-r" placeholder="التكرارات">
           </div>
           <div class="set-box">
-            <span>الجلسة 4</span>
+            <span>الجلسة 4 (Set 4)</span>
             <input type="number" id="s4-w" placeholder="الوزن (كغ)">
             <input type="number" id="s4-r" placeholder="التكرارات">
           </div>
@@ -344,7 +352,7 @@
             <option value="جبن بلدي/قريش" data-p="11" data-c="3.4" data-f="4.3" data-cal="98">جبن بلدي / جبن قريش (Cottage Cheese)</option>
             <option value="حليب كامل الدسم" data-p="3.4" data-c="4.8" data-f="3.6" data-cal="61">حليب كامل الدسم (Milk - 100 ملل)</option>
             <option value="تونة بالماء" data-p="26" data-c="0" data-f="1" data-cal="116">تونة معلبة (بالماء)</option>
-            <option value="SMAYKA Gainer Mix" data-p="24.1" data-c="45" data-f="14" data-cal="424">💥 الوصفة السرية تبع SMAYKA (ميكس الضخامة)</option>
+            <option value="SCORPION Gainer Mix" data-p="24.1" data-c="45" data-f="14" data-cal="424">💥 الوصفة السرية تبع SCORPION (ميكس الضخامة)</option>
           </optgroup>
           <optgroup label="🥜 الدهون الصحية والزيوت">
             <option value="زيت زيتون" data-p="0" data-c="0" data-f="100" data-cal="884">زيت زيتون (Olive Oil)</option>
@@ -367,24 +375,24 @@
         <p>البروتين: <b id="total-p" style="color:#4CAF50;">0</b> غرام</p>
         <p>الكاربوهيدرات: <b id="total-c" style="color:#2196F3;">0</b> غرام</p>
         <p>الدهون: <b id="total-f" style="color:#FF9800;">0</b> غرام</p>
-        <p>السعرات الحرارية: <b id="total-cal" style="color:#f44336;">0</b> Kcal</p>
+        <p>السعرات الحرارية: <b id="total-cal" style="color:#e53935;">0</b> Kcal</p>
         
         <label style="margin-top:15px;">مبيان توزيع الماكروز للوجبة:</label>
         <canvas id="macrosChart" height="180"></canvas>
 
         <div class="ai-food-box" id="ai-food-analysis">
-          🤖 <b>تحليل الروبوت الآلي للطعام:</b> أضف طعامك اليوم ليعلمك المدرب هل وجبتك تغطي احتياجك للضخامة أو التنشيف!
+          🤖 <b>تحليل المدرب الآلي:</b> أضف طعامك اليوم ليعلمك المدرب هل وجبتك تغطي احتياجك للضخامة أو التنشيف!
         </div>
 
         <button class="btn-primary" onclick="saveDailyMacros()" style="background:#2196F3; margin-top:15px;">حفظ يوميات الماكروز في الأرشيف 📂</button>
-        <button onclick="resetMacros()" style="background:var(--danger-color); border:none; color:#fff; padding:10px; border-radius:8px; width:100%; font-weight:bold; margin-top:8px; cursor:pointer;">إعادة ضبط الوجبة اليومية 🔄</button>
+        <button onclick="resetMacros()" style="background:#d32f2f; border:none; color:#fff; padding:10px; border-radius:8px; width:100%; font-weight:bold; margin-top:8px; cursor:pointer;">إعادة ضبط الوجبة اليومية 🔄</button>
       </div>
     </div>
 
     <!-- Tab 3: Analytics -->
     <div id="analytics" class="tab-content">
       <div class="card">
-        <h3>رسم بياني واضح لمنحنى الأوزان والتكرارات 📉📈</h3>
+        <h3>رسم بياني واضح لمنحنى الأوزان والتكرارات (Analytics) 📉📈</h3>
         
         <label>اختر العضلة لفلترة التمارين:</label>
         <select id="chart-muscle-filter" onchange="filterChartExerciseOptions()">
@@ -407,13 +415,13 @@
         </div>
 
         <div class="ai-box" id="ai-coach-analysis">
-          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض منحنى تطور الوزن والتكرارات معاً.
+          💡 <b>تحليل المدرب الذكي:</b> اختر تمريناً لعرض منحنى تطور الوزن والتكرارات معاً مقارنة بالأسبوع الماضي.
         </div>
       </div>
 
       <div class="card">
         <h3>مبيان تطور وزن الجسم الشهري ⚖️</h3>
-        <label>تسجيل الوزن (مثال: أخر الشهر أو الأسبوع):</label>
+        <label>تسجيل الوزن (مثال: آخر الشهر أو الأسبوع):</label>
         <input type="number" id="body-weight-input" placeholder="أدخل وزنك الحالي (كغ)">
         <button class="btn-primary" onclick="saveBodyWeight()">تسجيل الوزن الشهري 📝</button>
 
@@ -422,7 +430,7 @@
         </div>
         
         <div class="ai-box" id="ai-weight-analysis" style="border-right-color: var(--info-color);">
-          📊 <b>تحليل وزن الجسم:</b> يسجل هذا المبيان تقدمك الشهري لمتابعة زيادة الكتلة العضلية أو التنشيف.
+          📊 <b>تحليل وزن الجسم:</b> يسجل هذا المبيان تقدمك الشهري لمتابعة زيادة الكتلة العضلية (Bulking) أو التنشيف (Cutting).
         </div>
       </div>
     </div>
@@ -440,7 +448,7 @@
 
         <!-- Section 1: Workout Archive -->
         <div id="workout-arc" class="arc-content card" style="background:#181818; padding:10px;">
-          <h4 style="color:#4CAF50; margin-top:0;">أرشيف التمارين والتكرارات 🏋️‍♂️</h4>
+          <h4 style="color:var(--accent-color); margin-top:0;">أرشيف التمارين والتكرارات 🏋️‍♂️</h4>
           
           <label style="color:#fff; font-size:0.85rem;">🎯 اختر التمرين لعرض سجله وتواريخه:</label>
           <select id="archive-exercise-select" onchange="loadAllArchives()">
@@ -602,7 +610,7 @@
       return c1.includes(c2) || c2.includes(c1);
     }
 
-    // Structured Exercises Map (Grouped into Categories inside the single dropdown like the food calculator)
+    // Structured Exercises Map (Grouped into Categories inside the single dropdown)
     const groupedExercisesMap = {
       'صدر': {
         '⬆️ الصدر العلوي': [
@@ -744,7 +752,7 @@
         const exName = document.getElementById('exercise-name')?.value;
         if (!exName) return;
         
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         const matchedLogs = logs.filter(l => isSameExercise(l.exName, exName));
         
         for (let i = 1; i <= 4; i++) {
@@ -793,7 +801,7 @@
           }
         }
 
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         logs.forEach(l => {
           if (l.exName && !list.includes(l.exName)) list.push(l.exName);
         });
@@ -826,13 +834,13 @@
 
         const entry = { id: Date.now(), date, muscle, exName, sets };
         
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         logs.push(entry);
         
+        localStorage.setItem('scorpion_logs', JSON.stringify(logs));
         localStorage.setItem('smayka_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
 
-        alert('تم حفظ التمرين في الأرشيف والمبيان بنجاح! 💪');
+        alert('تم حفظ التمرين في الأرشيف والمبيان بنجاح! 💪🦂');
         populateArchiveExerciseDropdown();
         loadAllArchives();
       } catch (e) {
@@ -843,7 +851,7 @@
     // Edit Workout Item Action
     function editWorkoutItem(id) {
       try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         const item = logs.find(l => l.id === id);
         if (!item) return;
 
@@ -862,8 +870,8 @@
           item.sets[i].reps = parseInt(newR) || 0;
         }
 
+        localStorage.setItem('scorpion_logs', JSON.stringify(logs));
         localStorage.setItem('smayka_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
         alert('تم تعديل السجل بنجاح! ✏️');
         loadAllArchives();
         renderWorkoutChart();
@@ -874,30 +882,30 @@
 
     // Delete Item Actions
     function deleteWorkoutItem(id) {
-      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+      if (confirm('هل أنت متأكد من حذف هذا السجل الخاطئ؟')) {
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         logs = logs.filter(l => l.id !== id);
+        localStorage.setItem('scorpion_logs', JSON.stringify(logs));
         localStorage.setItem('smayka_logs', JSON.stringify(logs));
-        localStorage.setItem('gym_workout_logs', JSON.stringify(logs));
         loadAllArchives();
         renderWorkoutChart();
       }
     }
 
     function deleteNutritionItem(index) {
-      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
-        let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
+      if (confirm('هل أنت متأكد من حذف هذا السجل الخاطئ؟')) {
+        let nutritionLogs = JSON.parse(localStorage.getItem('scorpion_nutrition_logs') || '[]');
         nutritionLogs.splice(index, 1);
-        localStorage.setItem('smayka_nutrition_logs', JSON.stringify(nutritionLogs));
+        localStorage.setItem('scorpion_nutrition_logs', JSON.stringify(nutritionLogs));
         loadAllArchives();
       }
     }
 
     function deleteWeightItem(index) {
-      if (confirm('هل أنت تأكد من حذف هذا السجل الخاطئ؟')) {
-        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+      if (confirm('هل أنت متأكد من حذف هذا السجل الخاطئ؟')) {
+        let weights = JSON.parse(localStorage.getItem('scorpion_weights') || '[]');
         weights.splice(index, 1);
-        localStorage.setItem('smayka_weights', JSON.stringify(weights));
+        localStorage.setItem('scorpion_weights', JSON.stringify(weights));
         loadAllArchives();
         renderWeightChart();
       }
@@ -912,7 +920,7 @@
       const opt = select.options[select.selectedIndex];
       const weight = parseFloat(document.getElementById('food-weight').value) || 0;
 
-      if (weight <= 0) return alert('يرجى أدخال كمية صحيحة بالجرام');
+      if (weight <= 0) return alert('يرجى إدخال كمية صحيحة بالجرام');
 
       const ratio = weight / 100;
       totalP += parseFloat(opt.dataset.p) * ratio;
@@ -933,13 +941,13 @@
       const aiFoodBox = document.getElementById('ai-food-analysis');
       if (!aiFoodBox) return;
       if (totalCal === 0) {
-        aiFoodBox.innerHTML = '🤖 <b>تحليل الروبوت الآلي للطعام:</b> لم تقم بإضافة أي طعام بعد اليوم.';
+        aiFoodBox.innerHTML = '🤖 <b>تحليل المدرب الآلي:</b> لم تقم بإضافة أي طعام بعد اليوم.';
       } else if (totalCal < 2000) {
-        aiFoodBox.innerHTML = `⚠️ <b>تنبيه الروبوت الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة باحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
+        aiFoodBox.innerHTML = `⚠️ <b>تنبيه المدرب الآلي:</b> مجموع سعراتك الحالي هو <b>${totalCal.toFixed(0)} Kcal</b> والبروتين <b>${totalP.toFixed(1)}غ</b>. هذه الكمية <b>قليلة جداً</b> مقارنة باحتياج البناء العضلي (الضخامة). حاول زيادة الوجبات!`;
       } else if (totalCal >= 2000 && totalCal <= 3200) {
-        aiFoodBox.innerHTML = `🔥 <b>تحليل مميز من الروبوت الآلي:</b> ممتاز جداً! سعراتك (${totalCal.toFixed(0)} Kcal) وبروتينك (${totalP.toFixed(1)}غ) متوازنة ومتاحة بشكل رائع لتغذية عضلاتك ودعم نموها. استمر! 💪`;
+        aiFoodBox.innerHTML = `🔥 <b>تحليل مميز من المدرب الآلي:</b> ممتاز جداً! سعراتك (${totalCal.toFixed(0)} Kcal) وبروتينك (${totalP.toFixed(1)}غ) متوازنة ومتاحة بشكل رائع لتغذية عضلاتك ودعم نموها. استمر! 💪`;
       } else {
-        aiFoodBox.innerHTML = `🚀 <b>سعرات عالية جداً:</b> مجموعك وصل إلى <b>${totalCal.toFixed(0)} Kcal</b>. أنت في مرحلة فائض سعرات قوي جداً (Bulking قوية)، راقب وزنش الشهري لضمان عدم زيادة الدهون كثيراً!`;
+        aiFoodBox.innerHTML = `🚀 <b>سعرات عالية جداً:</b> مجموعك وصل إلى <b>${totalCal.toFixed(0)} Kcal</b>. أنت في مرحلة فائض سعرات قوي جداً (Bulking قوية)، راقب وزنك الشهري لضمان عدم زيادة الدهون كثيراً!`;
       }
     }
 
@@ -948,9 +956,9 @@
       const date = new Date().toLocaleDateString('ar-MA');
       const entry = { date, p: totalP.toFixed(1), c: totalC.toFixed(1), f: totalF.toFixed(1), cal: totalCal.toFixed(0) };
       
-      let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
+      let nutritionLogs = JSON.parse(localStorage.getItem('scorpion_nutrition_logs') || '[]');
       nutritionLogs.push(entry);
-      localStorage.setItem('smayka_nutrition_logs', JSON.stringify(nutritionLogs));
+      localStorage.setItem('scorpion_nutrition_logs', JSON.stringify(nutritionLogs));
 
       alert('تم حفظ يوميات الوجبة والماكروز في الأرشيف بنجاح! 🥗');
       loadAllArchives();
@@ -979,7 +987,7 @@
           labels: ['بروتين (غ)', 'كاربوهيدرات (غ)', 'دهون (غ)'],
           datasets: [{
             data: [totalP, totalC, totalF],
-            backgroundColor: ['#4CAF50', '#2196F3', '#FF9800'],
+            backgroundColor: ['#e53935', '#2196F3', '#FF9800'],
             borderWidth: 1
           }]
         },
@@ -995,9 +1003,9 @@
       const w = parseFloat(wInput?.value);
       if (!w) return alert('أدخل وزناً صحيحاً');
       const date = new Date().toLocaleDateString('ar-MA', { year: 'numeric', month: 'long' });
-      let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+      let weights = JSON.parse(localStorage.getItem('scorpion_weights') || '[]');
       weights.push({ date, weight: w });
-      localStorage.setItem('smayka_weights', JSON.stringify(weights));
+      localStorage.setItem('scorpion_weights', JSON.stringify(weights));
       alert('تم حفظ الوزن الشهري في الأرشيف والمبيان! ⚖️');
       renderWeightChart();
       loadAllArchives();
@@ -1005,7 +1013,7 @@
 
     function populateArchiveExerciseDropdown() {
       try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         const select = document.getElementById('archive-exercise-select');
         if (!select) return;
         
@@ -1028,7 +1036,7 @@
 
     function loadAllArchives() {
       try {
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         const workoutContainer = document.getElementById('history-list-workouts');
         const selectedEx = document.getElementById('archive-exercise-select')?.value || 'ALL';
 
@@ -1047,7 +1055,7 @@
               return `
                 <div class="history-item">
                   <div>
-                    <b>🗓️ ${l.date || 'تاريخ'} | <span style="color:#4CAF50;">${l.exName || 'تمرين'}</span></b>
+                    <b>🗓️ ${l.date || 'تاريخ'} | <span style="color:var(--accent-color);">${l.exName || 'تمرين'}</span></b>
                     <div style="font-size:0.75rem; color:#2196F3;">العضلة: ${l.muscle || ''}</div>
                     <div style="font-size:0.85rem; color:#aaa; margin-top:4px;">
                       ج1: ${setsArr[0]?.weight || 0}كغ (${setsArr[0]?.reps || 0}) |
@@ -1066,7 +1074,7 @@
           }
         }
 
-        let nutritionLogs = JSON.parse(localStorage.getItem('smayka_nutrition_logs') || '[]');
+        let nutritionLogs = JSON.parse(localStorage.getItem('scorpion_nutrition_logs') || '[]');
         const nutritionContainer = document.getElementById('history-list-nutrition');
         if (nutritionContainer) {
           if (!nutritionLogs || nutritionLogs.length === 0) {
@@ -1086,7 +1094,7 @@
           }
         }
 
-        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+        let weights = JSON.parse(localStorage.getItem('scorpion_weights') || '[]');
         const weightsContainer = document.getElementById('history-list-weights');
         if (weightsContainer) {
           if (!weights || weights.length === 0) {
@@ -1113,7 +1121,7 @@
         const exName = document.getElementById('chart-exercise-select')?.value;
         if (!exName) return;
         
-        let logs = JSON.parse(localStorage.getItem('smayka_logs') || localStorage.getItem('gym_workout_logs') || '[]');
+        let logs = JSON.parse(localStorage.getItem('scorpion_logs') || localStorage.getItem('smayka_logs') || '[]');
         const filtered = logs.filter(l => l && l.exName && isSameExercise(l.exName, exName));
 
         const labels = filtered.map(l => l.date || '');
@@ -1225,7 +1233,7 @@
     let weightChartInstance = null;
     function renderWeightChart() {
       try {
-        let weights = JSON.parse(localStorage.getItem('smayka_weights') || '[]');
+        let weights = JSON.parse(localStorage.getItem('scorpion_weights') || '[]');
         const labels = weights.map(w => w.date || '');
         const data = weights.map(w => w.weight || 0);
 
